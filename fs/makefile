@@ -1,1 +1,5 @@
-hello: hello.c read_super.c read_super.h plib.c plib.h
+debug :
+	$(MAKE) -C build
+
+clean :
+	$(MAKE) -C build clean
