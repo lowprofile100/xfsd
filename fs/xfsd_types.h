@@ -16,9 +16,11 @@ typedef __u64 __be64;
 typedef __u32 __be32;
 typedef __u16 __be16;
 
-#ifdef WIN_32
+#ifdef WIN32
 	#define BITS_PER_LONG 32
+	#define inline __inline
 #else
 	#define BITS_PER_LONG 64
+	#define inline inline
 #endif
 #endif
