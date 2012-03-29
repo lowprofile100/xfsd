@@ -1,28 +1,23 @@
 #include "read_super.h"
-#include <linux/types.h>
-#include "plib.h"
+#include "xfsd_types.h"
+#include "syscall.h"
 #include "xfs/uuid.h"
 #define __KERNEL__
-#define BITS_PER_LONG 64
 #include "xfs/xfs_types.h"
 #include "xfs/xfs_sb.h"
-typedef unsigned long long int __be64 ;
-typedef unsigned char __u8;
-#include "plib.h"
 
 xfs_sb_t sb;
 
 int init()
 {
-	static int fd;
-	fd = plibopen_rd( "xfs.d");
-	if ( fd == -1)
+	void *file = open_file( "tslib/xfs.lib", "r");
+	if ( file == ( void *) 0)
 	{
 		return -1;
 	}
 	else
 	{
-		plibread( fd, ( void *)&sb, sizeof( sb));
+		read_file( ( void *) &sb, sizeof( sb), 1, file);
 	}
 	return 0;
 }
