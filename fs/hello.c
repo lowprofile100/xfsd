@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "tslib/read_super.h"
-#include "ntddk.h"
 
 int main()
 {
@@ -12,10 +11,13 @@ int main()
 	return 0;
 }
 
+#ifdef WIN32
+#include "ntddk.h"
 NTSTATUS
 DriverEntry(PDRIVER_OBJECT DriverObject,PUNICODE_STRING
 RegistryPath)
 {
 	main();
-return STATUS_UNSUCCESSFUL;
+	return STATUS_UNSUCCESSFUL;
 }
+#endif

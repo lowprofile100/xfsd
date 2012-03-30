@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include "syscall.h"
 
-void *open_file( const char *name, const char *mode)
+static FILE *file;
+
+int open_file( const char *name, const char *mode)
 {
-	return ( void *)fopen( name, mode);
+	file = fopen( name, mode);
+	return file == NULL ? -1 : 0;
 }
 
-int read_file( void *ptr, int size, int nmemb,  void *stream)
+int read_file( void *ptr, int size, int nmemb)
 {
-	return fread( ptr, size, nmemb, ( FILE *)stream);
+	return file == NULL ? 0 : fread( ptr, size, nmemb, file);
 }
 
-int write_file( void * ptr, int size, int nmemb, void *stream)
+int write_file( void * ptr, int size, int nmemb)
 {
-	return fwrite( ptr, size, nmemb, ( FILE *)stream);
+	return file == NULL ? 0 : fwrite( ptr, size, nmemb, file);
 }

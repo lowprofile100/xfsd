@@ -10,14 +10,13 @@ xfs_sb_t sb;
 
 int init()
 {
-	void *file = open_file( "tslib/xfs.lib", "r");
-	if ( file == ( void *) 0)
+	if ( open_file( "tslib/xfs.lib", "r"))
 	{
 		return -1;
 	}
 	else
 	{
-		read_file( ( void *) &sb, sizeof( sb), 1, file);
+		read_file( ( void *) &sb, sizeof( sb), 1);
 	}
 	return 0;
 }

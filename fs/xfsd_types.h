@@ -20,7 +20,7 @@ typedef __u16 __be16;
 	#define BITS_PER_LONG 32
 	#define inline __inline
 #else
+// I use linux 64bits, so...
 	#define BITS_PER_LONG 64
-	#define inline inline
 #endif
 #endif
