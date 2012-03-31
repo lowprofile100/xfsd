@@ -10,7 +10,9 @@
 #include "xfs/xfs_ag.h"
 
 static xfs_sb_t sb;
-static xfs_agf_t ag;
+static xfs_agf_t agf;
+static xfs_agi_t agi;
+static xfs_agfl_t agfl;
 
 void
 xfs_sb_from_disk(
@@ -74,20 +76,30 @@ int init()
 	else
 	{
 		xfs_dsb_t dsb;
+		seek_file_set( 0);
 		read_file( ( void *) &dsb, sizeof( sb), 1);
-
 		xfs_sb_from_disk( &sb, &dsb);
+
+		seek_file_set( sb.sb_sectsize);
+		read_file( ( void *)&agi, sizeof( agi), 1);
+
+		seek_file_set( sb.sb_sectsize);
+		read_file( ( void *)&agf, sizeof( agf), 1);
+
+		seek_file_set( sb.sb_sectsize);
+		read_file( ( void *)&agfl, sizeof( agfl), 1);
 	}
 	return 0;
 }
 
-void get_magic( char * magic)
+void get_sb_magic( char * magic)
 {
 	char *cur = ( char *)&(sb.sb_magicnum);
 	while ( *cur)
 	{
 		*magic++ = *cur++;
 	}
+	*magic = '\0';
 }
 
 int get_sbs_count()
@@ -113,4 +125,24 @@ int get_sb_size()
 int get_sb_features2()
 {
 	return sb.sb_features2;
+}
+
+int get_sb_sectsize()
+{
+	return sb.sb_sectsize;
+}
+
+int get_agf_magic( char * magic)
+{
+	char *cur = ( char *)&(agf.agf_magicnum);
+	while ( *cur)
+	{
+		*magic++ = *cur++;
+	}
+	*magic = '\0';
+}
+
+int get_sb_ifree()
+{
+	return sb.sb_ifree;
 }

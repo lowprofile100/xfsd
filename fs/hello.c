@@ -6,12 +6,17 @@ int main()
 	char magic[100];
 	init();
 
-	get_magic( magic);
+	get_sb_magic( magic);
 	printf("%s\n", magic);
 	printf("%d\n", get_sbs_count());
 	printf("%d\n", get_dsb_size());
 	printf("%d\n", get_sb_size());
 	printf("0x%x\n", get_sb_features2());
+	printf("%d\n", get_sb_sectsize());
+
+	get_agf_magic( magic);
+	printf("%s\n", magic);
+	printf("%d\n", get_sb_ifree());
 	return 0;
 }
 

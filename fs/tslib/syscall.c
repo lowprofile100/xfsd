@@ -25,6 +25,21 @@ int seek_file( long offset, int whence)
 	return fseek( file, offset, whence);
 }
 
+int seek_file_set( long offset)
+{
+	return fseek( file, offset, SEEK_SET);
+}
+
+int seek_file_cur( long offset)
+{
+	return fseek( file, offset, SEEK_CUR);
+}
+
+int seek_file_end( long offset)
+{
+	return fseek( file, offset, SEEK_END);
+}
+
 void *mem_cpy( void *dst, void *src, int n)
 {
 	return memcpy( dst, src, n);

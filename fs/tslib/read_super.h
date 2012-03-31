@@ -3,6 +3,6 @@
 
 
 int init();
-void get_magic( char *);
+void get_sb_magic( char *);
 
 #endif
