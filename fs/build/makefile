@@ -1,7 +1,8 @@
-vpath % .. ../tslib ../xfs
+vpath % .. ../tslib ../xfs ../linux
 CFLAGS = -I ../
-hello: hello.c read_super.o syscall.o
+hello: hello.c read_super.o syscall.o rbtree.o
 
 
 clean:
-	rm hello
+	rm -f hello
+	rm -f *.o

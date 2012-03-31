@@ -8,6 +8,10 @@ int main()
 
 	get_magic( magic);
 	printf("%s\n", magic);
+	printf("%d\n", get_sbs_count());
+	printf("%d\n", get_dsb_size());
+	printf("%d\n", get_sb_size());
+	printf("0x%x\n", get_sb_features2());
 	return 0;
 }
 
