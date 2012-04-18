@@ -1,18 +1,27 @@
 #include "read_super.h"
 #include "xfsd_types.h"
 #include "syscall.h"
-#include "xfs/uuid.h"
 #define __KERNEL__
+
+#include "xfs/uuid.h"
 #include "xfs/xfs_types.h"
 #include "xfs/xfs_sb.h"
+
 #include "xfs/xfs_inum.h"
 #include "linux/rbtree.h"
 #include "xfs/xfs_ag.h"
 
+#include "xfs/xfs_ialloc_btree.h"
+#include "xfs/xfs_alloc_btree.h"
+#include "xfs/xfs_bmap_btree.h"
+#include "xfs/xfs_btree.h"
+
+static xfs_dsb_t dsb;
 static xfs_sb_t sb;
 static xfs_agf_t agf;
 static xfs_agi_t agi;
 static xfs_agfl_t agfl;
+static struct xfs_btree_block bblock;
 
 void
 xfs_sb_from_disk(
@@ -75,7 +84,6 @@ int init()
 	}
 	else
 	{
-		xfs_dsb_t dsb;
 		seek_file_set( 0);
 		read_file( ( void *) &dsb, sizeof( sb), 1);
 		xfs_sb_from_disk( &sb, &dsb);
@@ -100,6 +108,11 @@ void get_sb_magic( char * magic)
 		*magic++ = *cur++;
 	}
 	*magic = '\0';
+}
+
+unsigned int get_dsb_magic_int()
+{
+	return dsb.sb_magicnum;
 }
 
 int get_sbs_count()

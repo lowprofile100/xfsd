@@ -8,6 +8,7 @@ int main()
 
 	get_sb_magic( magic);
 	printf("%s\n", magic);
+	printf("%u\n", get_dsb_magic_int());
 	printf("%d\n", get_sbs_count());
 	printf("%d\n", get_dsb_size());
 	printf("%d\n", get_sb_size());
