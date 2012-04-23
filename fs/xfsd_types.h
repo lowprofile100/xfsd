@@ -114,6 +114,12 @@ struct __TSLIB_(rcu_head)
 	void (*func)( struct __TSLIB_(rcu_head) *head);
 };
 
+// Fake kmem_zone_t
+// This is about mem manage! Be careful.
+typedef struct
+{
+} kmem_zone_t;
+
 typedef int __TSLIB_(a_test_type);
 
 
@@ -127,6 +133,7 @@ typedef int __TSLIB_(a_test_type);
 #endif
 
 // Copied from xfs/xfs_linux.h
+// What are they talking about.
 /*
  * XFS_BIG_BLKNOS needs block layer disk addresses to be 64 bits.
  * XFS_BIG_INUMS requires XFS_BIG_BLKNOS to be set.
