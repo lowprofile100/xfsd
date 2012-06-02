@@ -1,10 +1,10 @@
 ﻿
-// UIDlg.cpp : 实现文件
+// UI2Dlg.cpp : 实现文件
 //
 
 #include "stdafx.h"
-#include "UI.h"
-#include "UIDlg.h"
+#include "UI2.h"
+#include "UI2Dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -43,34 +43,34 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CUIDlg 对话框
+// CUI2Dlg 对话框
 
 
 
 
-CUIDlg::CUIDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CUIDlg::IDD, pParent)
+CUI2Dlg::CUI2Dlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CUI2Dlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CUIDlg::DoDataExchange(CDataExchange* pDX)
+void CUI2Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 }
 
-BEGIN_MESSAGE_MAP(CUIDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CUI2Dlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	
-	ON_NOTIFY(TVN_SELCHANGED, IDC_MFCSHELLTREE1, &CUIDlg::OnTvnSelchangedMfcshelltree1)
+	ON_EN_CHANGE(IDC_MFCEDITBROWSE1, &CUI2Dlg::OnEnChangeMfceditbrowse1)
+	ON_BN_CLICKED(IDC_BUTTON1, &CUI2Dlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
-// CUIDlg 消息处理程序
+// CUI2Dlg 消息处理程序
 
-BOOL CUIDlg::OnInitDialog()
+BOOL CUI2Dlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -99,14 +99,12 @@ BOOL CUIDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	ShowWindow(SW_MAXIMIZE);
-
 	// TODO: 在此添加额外的初始化代码
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
-void CUIDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CUI2Dlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -123,7 +121,7 @@ void CUIDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  来绘制该图标。对于使用文档/视图模型的 MFC 应用程序，
 //  这将由框架自动完成。
 
-void CUIDlg::OnPaint()
+void CUI2Dlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -150,36 +148,14 @@ void CUIDlg::OnPaint()
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
 //显示。
-HCURSOR CUIDlg::OnQueryDragIcon()
+HCURSOR CUI2Dlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
 
-void CUIDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-	*pResult = 0;
-}
-
-
-void CUIDlg::OnLvnItemchangedList2(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-	*pResult = 0;
-}
-
-
-void CUIDlg::OnLbnSelchangeList3()
-{
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-}
-
-
-void CUIDlg::OnEnChangeMfceditbrowse1()
+void CUI2Dlg::OnEnChangeMfceditbrowse1()
 {
 	// TODO:  Èç¹û¸Ã¿Ø¼þÊÇ RICHEDIT ¿Ø¼þ£¬Ëü½«²»
 	// ·¢ËÍ´ËÍ¨Öª£¬³ý·ÇÖØÐ´ CDialogEx::OnInitDialog()
@@ -190,32 +166,7 @@ void CUIDlg::OnEnChangeMfceditbrowse1()
 }
 
 
-void CUIDlg::OnBnClickedMfcmenubutton2()
+void CUI2Dlg::OnBnClickedButton1()
 {
 	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-}
-
-
-void CUIDlg::OnBnClickedMfcmenubutton4()
-{
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-}
-
-
-void CUIDlg::OnEnChangeEdit1()
-{
-	// TODO:  Èç¹û¸Ã¿Ø¼þÊÇ RICHEDIT ¿Ø¼þ£¬Ëü½«²»
-	// ·¢ËÍ´ËÍ¨Öª£¬³ý·ÇÖØÐ´ CDialogEx::OnInitDialog()
-	// º¯Êý²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖÐ¡£
-
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-}
-
-
-void CUIDlg::OnTvnSelchangedMfcshelltree1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-	*pResult = 0;
 }

@@ -1,26 +1,26 @@
 
-// UI.cpp : 定义应用程序的类行为。
+// UI2.cpp : 定义应用程序的类行为。
 //
 
 #include "stdafx.h"
-#include "UI.h"
-#include "UIDlg.h"
+#include "UI2.h"
+#include "UI2Dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CUIApp
+// CUI2App
 
-BEGIN_MESSAGE_MAP(CUIApp, CWinApp)
+BEGIN_MESSAGE_MAP(CUI2App, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
-// CUIApp 构造
+// CUI2App 构造
 
-CUIApp::CUIApp()
+CUI2App::CUI2App()
 {
 	// 支持重新启动管理器
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
@@ -30,14 +30,14 @@ CUIApp::CUIApp()
 }
 
 
-// 唯一的一个 CUIApp 对象
+// 唯一的一个 CUI2App 对象
 
-CUIApp theApp;
+CUI2App theApp;
 
 
-// CUIApp 初始化
+// CUI2App 初始化
 
-BOOL CUIApp::InitInstance()
+BOOL CUI2App::InitInstance()
 {
 	// 如果一个运行在 Windows XP 上的应用程序清单指定要
 	// 使用 ComCtl32.dll 版本 6 或更高版本来启用可视化方式，
@@ -67,7 +67,7 @@ BOOL CUIApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
-	CUIDlg dlg;
+	CUI2Dlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

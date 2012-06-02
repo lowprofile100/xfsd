@@ -1,5 +1,5 @@
 
-// UI.h : PROJECT_NAME 应用程序的主头文件
+// UI2.h : PROJECT_NAME 应用程序的主头文件
 //
 
 #pragma once
@@ -11,14 +11,14 @@
 #include "resource.h"		// 主符号
 
 
-// CUIApp:
-// 有关此类的实现，请参阅 UI.cpp
+// CUI2App:
+// 有关此类的实现，请参阅 UI2.cpp
 //
 
-class CUIApp : public CWinApp
+class CUI2App : public CWinApp
 {
 public:
-	CUIApp();
+	CUI2App();
 
 // 重写
 public:
@@ -29,4 +29,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CUIApp theApp;
+extern CUI2App theApp;

@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E8541194-6AE9-4FB2-8811-4055787747F5}</ProjectGuid>
-    <RootNamespace>UI</RootNamespace>
+    <ProjectGuid>{F68A22BE-DD7F-4275-BAA0-5294C2346510}</ProjectGuid>
+    <RootNamespace>UI2</RootNamespace>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -95,33 +95,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="res\UI.ico" />
-    <None Include="res\UI.rc2" />
+    <None Include="res\UI2.ico" />
+    <None Include="res\UI2.rc2" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="UI.h" />
-    <ClInclude Include="UIDlg.h" />
+    <ClInclude Include="UI2.h" />
+    <ClInclude Include="UI2Dlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UI.cpp" />
-    <ClCompile Include="UIDlg.cpp" />
+    <ClCompile Include="UI2.cpp" />
+    <ClCompile Include="UI2Dlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="UI.rc" />
+    <ResourceCompile Include="UI2.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="UI.rc" />
+      <UserProperties RESOURCE_FILE="UI2.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

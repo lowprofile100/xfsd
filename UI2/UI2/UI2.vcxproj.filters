@@ -16,18 +16,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="res\UI.rc2">
+    <None Include="res\UI2.rc2">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="res\UI.ico">
+    <None Include="res\UI2.ico">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UI.h">
+    <ClInclude Include="UI2.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="UIDlg.h">
+    <ClInclude Include="UI2Dlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -41,10 +41,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UI.cpp">
+    <ClCompile Include="UI2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="UIDlg.cpp">
+    <ClCompile Include="UI2Dlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -52,7 +52,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="UI.rc">
+    <ResourceCompile Include="UI2.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
