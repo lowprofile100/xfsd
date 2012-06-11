@@ -202,7 +202,7 @@ XInitializeGlobalData (
 //初始化全局数据结构
 
 {
-    //
+    //  分发历程。
     //  Start by initializing the FastIoDispatch Table.
     //
 
