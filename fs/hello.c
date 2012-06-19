@@ -3,21 +3,27 @@
 
 int main()
 {
-	char magic[100];
+	char magic[100] = { 0};
 	init();
 
 	get_sb_magic( magic);
-	printf("%s\n", magic);
-	printf("%u\n", get_dsb_magic_int());
-	printf("%d\n", get_sbs_count());
-	printf("%d\n", get_dsb_size());
-	printf("%d\n", get_sb_size());
-	printf("0x%x\n", get_sb_features2());
-	printf("%d\n", get_sb_sectsize());
+	printf("sb_magic \t\t\t%s\n", magic);
+	printf("disk sb_magic int \t\t%u\n", get_dsb_magic_int());
+	printf("sbs count \t\t\t%d\n", get_sbs_count());
+	printf("disk sb size \t\t\t%d\n", get_dsb_size());
+	printf("sb size \t\t\t%d\n", get_sb_size());
+	printf("sb features2 \t\t\t0x%x\n", get_sb_features2());
+	printf("sb sectsize \t\t\t%d\n", get_sb_sectsize());
+	printf("sb inode free \t\t\t%d\n", get_sb_ifree());
 
 	get_agf_magic( magic);
-	printf("%s\n", magic);
-	printf("%d\n", get_sb_ifree());
+	printf("agf magic \t\t\t%s\n", magic);
+	printf("agf flcount \t\t\t%d\n", get_agf_flcount());
+	printf("agf version num \t\t%d\n", get_agf_versionnum());
+	printf("agf free block 1 \t\t%d\n", get_agf_free_block( 0));
+	printf("agf free block 2 \t\t%d\n", get_agf_free_block( 1));
+	printf("agf free block 3 \t\t%d\n", get_agf_free_block( 2));
+	printf("agf free block 4 \t\t%d\n", get_agf_free_block( 3));
 	return 0;
 }
 

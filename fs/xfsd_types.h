@@ -10,6 +10,17 @@
 # define __TSLIB_(x) x
 #endif
 
+
+#ifdef WIN32
+# define BITS_PER_LONG 32
+// VC needs __inline in C
+# define inline __inline
+#else
+// I use linux 64bits, so...
+# define BITS_PER_LONG 64
+#endif
+
+
 // Types for short
 #ifdef WIN32
 typedef __int64 __s64;
@@ -34,6 +45,43 @@ typedef unsigned char __u8;
 typedef __u64 __be64;
 typedef __u32 __be32;
 typedef __u16 __be16;
+
+
+// Basic types.
+/*
+ * Additional type declarations for XFS
+ */
+typedef __s8	__TSLIB_(__int8_t);
+typedef __u8	__TSLIB_(__uint8_t);
+typedef __s16	__TSLIB_(__int16_t);
+typedef __u16	__TSLIB_(__uint16_t);
+typedef __s32 	__TSLIB_(__int32_t);
+typedef __u32	__TSLIB_(__uint32_t);
+typedef __s64 	__TSLIB_(__int64_t);
+typedef __u64	__TSLIB_(__uint64_t);
+
+typedef enum { B_FALSE,B_TRUE }	boolean_t;
+typedef __uint32_t		prid_t;		/* project ID */
+typedef __uint32_t		inst_t;		/* an instruction */
+
+typedef __s64			xfs_off_t;	/* <file offset> type */
+typedef unsigned long long	xfs_ino_t;	/* <inode> type */
+typedef __s64			xfs_daddr_t;	/* <disk address> type */
+typedef char *			xfs_caddr_t;	/* <core address> type */
+typedef __u32			xfs_dev_t;
+typedef __u32			xfs_nlink_t;
+
+/* __psint_t is the same size as a pointer */
+#if (BITS_PER_LONG == 32)
+typedef __int32_t __psint_t;
+typedef __uint32_t __psunsigned_t;
+#elif (BITS_PER_LONG == 64)
+typedef __int64_t __psint_t;
+typedef __uint64_t __psunsigned_t;
+#else
+#error BITS_PER_LONG must be 32 or 64
+#endif
+
 
 // Copied from linux/swab.h
 #define REVERSE_BITS16( x)((__u16)( 					\
@@ -123,15 +171,6 @@ typedef struct
 typedef int __TSLIB_(a_test_type);
 
 
-#ifdef WIN32
-# define BITS_PER_LONG 32
-// VC needs __inline in C
-# define inline __inline
-#else
-// I use linux 64bits, so...
-# define BITS_PER_LONG 64
-#endif
-
 // Copied from xfs/xfs_linux.h
 // What are they talking about.
 /*
@@ -167,6 +206,5 @@ typedef unsigned char           __TSLIB_(unchar);
 typedef unsigned short          __TSLIB_(ushort);
 typedef unsigned int            __TSLIB_(uint);
 typedef unsigned long           __TSLIB_(ulong);
-
 
 #endif

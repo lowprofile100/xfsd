@@ -12,12 +12,12 @@ int open_file( const char *name, const char *mode)
 
 int read_file( void *ptr, int size, int nmemb)
 {
-	return file == NULL ? 0 : fread( ptr, size, nmemb, file);
+	return fread( ptr, size, nmemb, file);
 }
 
 int write_file( void * ptr, int size, int nmemb)
 {
-	return file == NULL ? 0 : fwrite( ptr, size, nmemb, file);
+	return fwrite( ptr, size, nmemb, file);
 }
 
 int seek_file( long offset, int whence)
@@ -43,4 +43,15 @@ int seek_file_end( long offset)
 void *mem_cpy( void *dst, void *src, int n)
 {
 	return memcpy( dst, src, n);
+}
+
+size_t str_len( const char *str)
+{
+	return strlen( str);
+}
+
+int read_file_length( void *ptr, long offset, int size, int nmemb)
+{
+	seek_file_set( offset);
+	return read_file( ptr, size, nmemb);
 }

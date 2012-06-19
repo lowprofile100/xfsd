@@ -9,5 +9,7 @@ int seek_file_set( long offset);
 int seek_file_cur( long offset);
 int seek_file_end( long offset);
 void *mem_cpy( void *dst, void *src, int n);
+size_t str_len( const char *str);
+int read_file_length( void *ptr, long offset, int size, int nmemb)
 
 #endif
