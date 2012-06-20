@@ -9,5 +9,8 @@
 #define S_IFDIR  0040000
 #define S_IFMT  00170000
 
+#ifdef CONfiG_XFS_DEBUG
+#endif
+
 #endif
 

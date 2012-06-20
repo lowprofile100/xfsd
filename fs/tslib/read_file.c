@@ -100,7 +100,7 @@ int read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 	xfs_dinode_t *temp;
 	xfs_daddr_t offset = inode & XFS_INO_MASK( sb.sb_inopblog);
 
-	init_mem( &( void *)temp, sizeof( xfs_dinode_t) * offset); 	// Set offset in block.
+	init_mem( &( void *)temp, sb.sb_inodesize * offset); 		// Set offset in block.
 	init_mem( &( void *)temp, sizeof( xfs_dinode_t)); 		// Read it out.
 	xfs_dinode_from_disk( mem, temp); 				// Copy it.
 

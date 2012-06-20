@@ -11,6 +11,7 @@
 #endif
 
 
+/* This lib is only used under win32. */
 #ifdef WIN32
 # define BITS_PER_LONG 32
 // VC needs __inline in C
