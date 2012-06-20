@@ -7,6 +7,10 @@
 #include "UI2Dlg.h"
 #include "afxdialogex.h"
 
+#include "fs/tslib/read_file.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -63,8 +67,9 @@ BEGIN_MESSAGE_MAP(CUI2Dlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_EN_CHANGE(IDC_MFCEDITBROWSE1, &CUI2Dlg::OnEnChangeMfceditbrowse1)
-	ON_BN_CLICKED(IDC_BUTTON1, &CUI2Dlg::OnBnClickedButton1)
+	ON_EN_CHANGE(IDC_EDIT2, &CUI2Dlg::OnEnChangeEdit2)
+	ON_BN_CLICKED(IDC_BUTTON5, &CUI2Dlg::OnBnClickedButton5)
+	ON_EN_CHANGE(IDC_EDIT1, &CUI2Dlg::OnEnChangeEdit1)
 END_MESSAGE_MAP()
 
 
@@ -155,18 +160,43 @@ HCURSOR CUI2Dlg::OnQueryDragIcon()
 
 
 
-void CUI2Dlg::OnEnChangeMfceditbrowse1()
-{
-	// TODO:  Èç¹û¸Ã¿Ø¼þÊÇ RICHEDIT ¿Ø¼þ£¬Ëü½«²»
-	// ·¢ËÍ´ËÍ¨Öª£¬³ý·ÇÖØÐ´ CDialogEx::OnInitDialog()
-	// º¯Êý²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖÐ¡£
 
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+
+
+//目标地址对话框
+void CUI2Dlg::OnEnChangeEdit2()
+{
+	
 }
 
-
-void CUI2Dlg::OnBnClickedButton1()
+//copy
+void CUI2Dlg::OnBnClickedButton5()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	
+	CString str1,str2;
+GetDlgItemText(IDC_EDIT1, str1);
+GetDlgItemText(IDC_EDIT2, str2);
+USES_CONVERSION; //将cstring转化为char所用的宏，以下将cstring转化为char
+	char *addr1=T2A(str1.GetBuffer());
+	char *addr2=T2A(str2.GetBuffer());
+
+//这个内存是这么设的吗？可是这样的话后面用sizeof取不到长度。
+	char buff[1024];
+	//这块跑不起来不知道为什么。。。。
+init_read_file()
+read_file( addr1,buff,sizeof(buff));
+
+//以下的代码测试正常
+FILE* fp;
+ fp=fopen(addr2,"wb+");// 读写打开或建立一个二进制文件，允许读和写
+ fwrite(&buff,sizeof(buff),1,fp);
+fclose(fp); //关闭文件
+
+
+}
+
+//源地址对话框
+void CUI2Dlg::OnEnChangeEdit1()
+{
+
 }
