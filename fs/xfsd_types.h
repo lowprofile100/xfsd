@@ -10,6 +10,8 @@
 # define __TSLIB_(x) x
 #endif
 
+#define FAKE_STRUCT( name) struct __TSLIB_(name) {}
+#define FAKE_STRUCT_TYPE( name) typedef struct __TSLIB_(name) {} __TSLIB_(name##_t)
 
 /* This lib is only used under win32. */
 #ifdef WIN32
@@ -61,24 +63,24 @@ typedef __u32	__TSLIB_(__uint32_t);
 typedef __s64 	__TSLIB_(__int64_t);
 typedef __u64	__TSLIB_(__uint64_t);
 
-typedef enum { B_FALSE,B_TRUE }	boolean_t;
-typedef __uint32_t		prid_t;		/* project ID */
-typedef __uint32_t		inst_t;		/* an instruction */
+typedef enum { __TSLIB_(B_FALSE), __TSLIB_(B_TRUE) }	__TSLIB_(boolean_t);
+typedef __uint32_t		__TSLIB_(prid_t);		/* project ID */
+typedef __uint32_t		__TSLIB_(inst_t);		/* an instruction */
 
-typedef __s64			xfs_off_t;	/* <file offset> type */
-typedef unsigned long long	xfs_ino_t;	/* <inode> type */
-typedef __s64			xfs_daddr_t;	/* <disk address> type */
-typedef char *			xfs_caddr_t;	/* <core address> type */
-typedef __u32			xfs_dev_t;
-typedef __u32			xfs_nlink_t;
+typedef __s64			__TSLIB_(xfs_off_t);	/* <file offset> type */
+typedef unsigned long long	__TSLIB_(xfs_ino_t);	/* <inode> type */
+typedef __s64			__TSLIB_(xfs_daddr_t);	/* <disk address> type */
+typedef char *			__TSLIB_(xfs_caddr_t);	/* <core address> type */
+typedef __u32			__TSLIB_(xfs_dev_t);
+typedef __u32			__TSLIB_(xfs_nlink_t);
 
 /* __psint_t is the same size as a pointer */
 #if (BITS_PER_LONG == 32)
-typedef __int32_t __psint_t;
-typedef __uint32_t __psunsigned_t;
+typedef __int32_t __TSLIB_(__psint_t);
+typedef __uint32_t __TSLIB_(__psunsigned_t);
 #elif (BITS_PER_LONG == 64)
-typedef __int64_t __psint_t;
-typedef __uint64_t __psunsigned_t;
+typedef __int64_t __TSLIB_(__psint_t);
+typedef __uint64_t __TSLIB_(__psunsigned_t);
 #else
 #error BITS_PER_LONG must be 32 or 64
 #endif
@@ -165,12 +167,7 @@ struct __TSLIB_(rcu_head)
 
 // Fake kmem_zone_t
 // This is about mem manage! Be careful.
-typedef struct
-{
-} kmem_zone_t;
-
-typedef int __TSLIB_(a_test_type);
-
+FAKE_STRUCT_TYPE( kmem_zone);
 
 // Copied from xfs/xfs_linux.h
 // What are they talking about.
@@ -191,7 +188,7 @@ typedef int __TSLIB_(a_test_type);
 
 #ifdef WIN32
 #else
-typedef long long size_t;
+typedef long long __TSLIB_(size_t);
 #endif
 
 
@@ -203,9 +200,68 @@ typedef unsigned int            __TSLIB_(u_int);
 typedef unsigned long           __TSLIB_(u_long);
 
 /* sysv */
-typedef unsigned char           __TSLIB_(unchar);
+typedef unsigned char           __TSLIB_(uchar);
 typedef unsigned short          __TSLIB_(ushort);
 typedef unsigned int            __TSLIB_(uint);
 typedef unsigned long           __TSLIB_(ulong);
+
+/* GNUC */
+typedef __u64 			__TSLIB_(uint64_t);
+typedef __u64 			__TSLIB_(u_int64_t);
+typedef __s64 			__TSLIB_(int64_t);
+
+/*
+ * Fake mrlock_t, it should be a rwsem-spinlock. used in xfs_inode.h
+ */
+
+FAKE_STRUCT_TYPE(mrlock);
+
+/*
+ * Fake struct inode, used in xfs_inode.h
+ */
+FAKE_STRUCT(inode);
+
+/*
+ * Fake container_of, used in xfs_inode.h
+ */
+#define container_of( ptr, type, member) 0
+
+/*
+ * Copied from linux/types.h, used in xfs_inode.h
+ */
+typedef unsigned short 		__TSLIB_(umode_t);
+
+/*
+ * Copied from xfs/xfs_linux.h
+ */
+#define __arch_pack
+
+/*
+ * Copied from linux/stddef.h
+ */
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+
+/*
+ * Copied from xfs/xfs_buf.h, used in xfs_mount.h.
+ */
+FAKE_STRUCT_TYPE( xfs_buftarg);
+
+/*
+ * Copied from linux/workqueue.h, used in xfs_mount.h.
+ */
+FAKE_STRUCT( delayed_work);
+FAKE_STRUCT( work_struct);
+
+/*
+ * Copied from linux/shrinker.h, used in xfs_mount.h.
+ */
+FAKE_STRUCT( shrinker);
+
+/*
+ * Copied from linux/pagemap.h, used in xfs_mount.h.
+ * This won't be used.
+ */
+#define PAGE_SIZE (1<<12)
+#define PAGE_CACHE_SIZE PAGE_SIZE
 
 #endif

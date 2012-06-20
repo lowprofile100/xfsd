@@ -2,7 +2,7 @@
 #define __READ_FILE_H__
 
 #define MAXDEEPTH 10
-void read_file( const char *file_name, void *mem, size_t size);
+int read_file_from_disk( const char *file_name, void *mem, long size);
 
 
 #endif

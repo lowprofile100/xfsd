@@ -3,13 +3,27 @@
 #include "read_super.h"
 #include "syscall.h"
 
+#include "xfsd_types.h"
+#include "xfs/xfs_types.h"
 #include "xfs/xfs_inum.h"
 #include "linux/rbtree.h"
 #include "xfs/xfs_ag.h"
 #include "xfs/xfs_dinode.h"
+#include "xfs/xfs_bmap_btree.h"
+#include "xfs/uuid.h"
+#define __KERNEL__
 #include "xfs/xfs_inode.h"
+#undef __KERNEL__
 
-#include "xfs_dir2_format.h"
+#include "xfs/xfs_sb.h"
+
+#include "xfs/xfs_da_btree.h"
+#define __KERNEL__
+#include "xfs/xfs_mount.h"
+#undef __KERNEL__
+#include "xfs/xfs_dir2_format.h"
+
+#include "tslib/tslib_types.h"
 
 extern xfs_agi_t agi;
 extern xfs_sb_t sb;
@@ -52,21 +66,20 @@ xfs_dinode_from_disk(
 
 static xfs_ino_t rootino;
 static xfs_daddr_t agi_root;
-static char *block_buf[4096];
+static char block_buf[4096];
 static char *block_bufp;
 
-int init_read_file()
+int init_read_file_from_disk()
 {
 	rootino = sb.sb_rootino;
-	agi_root = agi.agi_root;
+	agi_root = get_agi_root();
 }
 
 // Errors are not handled here.
-void read_block( xfs_daddr_t block)
+int read_block_from_disk( xfs_daddr_t block)
 {
 	read_file_length( ( void *)block_buf, block * sb.sb_blocksize, sb.sb_blocksize, 1);
 	block_bufp = block_buf;
-
 	return 0;
 }
 
@@ -89,19 +102,19 @@ int read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 
 	/* Get the start block of this ag.*/
 	xfs_agblock_t blocks = sb.sb_agblocks;
-	blocks *= agi.agi_seqno;
+	blocks *= get_agi_seqno();
 
 	/* I shouldn't rely on these globle varibles, use params instead. */
 	xfs_daddr_t inoblock = inode >> sb.sb_inopblog;
 	inoblock += blocks;
 
 	/* Read the whole block and put it into a local buffer. */
-	read_block( inoblock);
+	read_block_from_disk( inoblock);
 	xfs_dinode_t *temp;
 	xfs_daddr_t offset = inode & XFS_INO_MASK( sb.sb_inopblog);
 
-	init_mem( &( void *)temp, sb.sb_inodesize * offset); 		// Set offset in block.
-	init_mem( &( void *)temp, sizeof( xfs_dinode_t)); 		// Read it out.
+	init_mem( ( void **) &temp, sb.sb_inodesize * offset); 		// Set offset in block.
+	init_mem( ( void **) &temp, sizeof( xfs_dinode_t)); 		// Read it out.
 	xfs_dinode_from_disk( mem, temp); 				// Copy it.
 
 	return 0;
@@ -146,7 +159,7 @@ int read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 	*/
 }
 
-int read_file( const char *file_name, void *mem, size_t size)
+int read_file_from_disk( const char *file_name, void *mem, long size)
 {
 	if ( *file_name != '/')
 	{
@@ -158,9 +171,12 @@ int read_file( const char *file_name, void *mem, size_t size)
 	int len = str_len( file_name);
 	xfs_icdinode_t cur;
 	/* Get to the root inode*/
+	print("read_file_from_disk: %s\n", file_name);
 	if ( read_inode_relative( rootino, &cur) == 0)
 	{
 		/* Process to the end of the path.*/
+		print("%x %x %x\n", (int)cur.di_magic, (int)cur.di_mode, (int)cur.di_version);
+		return 0;
 		while ( len)
 		{
 			/* If this is a dir. */
@@ -193,7 +209,7 @@ int read_file( const char *file_name, void *mem, size_t size)
 						xfs_dir2_sf_entry_t *entptr = xfs_dir2_sf_firstentry( hdrptr);
 						while( tot--)
 						{
-							ino = xfs_dir2_sf_get_ino( sfp, sfep);
+							//ino = xfs_dir2_sf_get_ino( sfp, sfep);
 						}
 					}
 				}
@@ -203,7 +219,7 @@ int read_file( const char *file_name, void *mem, size_t size)
 	}
 	else
 	{
-		printf("read ino error %lld\n", (int)rootino);
+		print("read ino error %lld\n", (int)rootino);
 		return -1;
 	}
 	return 0;

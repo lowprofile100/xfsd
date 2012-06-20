@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "syscall.h"
 
 static FILE *file;
@@ -45,7 +46,7 @@ void *mem_cpy( void *dst, void *src, int n)
 	return memcpy( dst, src, n);
 }
 
-size_t str_len( const char *str)
+long str_len( const char *str)
 {
 	return strlen( str);
 }
@@ -54,4 +55,14 @@ int read_file_length( void *ptr, long offset, int size, int nmemb)
 {
 	seek_file_set( offset);
 	return read_file( ptr, size, nmemb);
+}
+
+int print( const char *format, ...)
+{
+	va_list arg;
+	va_start( arg, format);
+	int ret = vprintf( format, arg);
+	va_end( arg);
+
+	return ret;
 }

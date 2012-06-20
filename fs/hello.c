@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "tslib/read_super.h"
+#include "tslib/read_file.h"
 
 int main()
 {
@@ -24,6 +25,11 @@ int main()
 	printf("agf free block 2 \t\t%d\n", get_agf_free_block( 1));
 	printf("agf free block 3 \t\t%d\n", get_agf_free_block( 2));
 	printf("agf free block 4 \t\t%d\n", get_agf_free_block( 3));
+
+	print("Begin to read disk\n");
+	init_read_file_from_disk();
+	char tmp[100];
+	read_file_from_disk( "/a", tmp, 100);
 	return 0;
 }
 

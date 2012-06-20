@@ -83,7 +83,7 @@ int read_block( int offset, void *mem, int nmeb)
 		return -1;
 	}
 
-	return read_file( mem, sb.sb_block_size, nmeb);
+	return read_file( mem, sb.sb_blocksize, nmeb);
 }
 
 int init()
@@ -193,4 +193,9 @@ xfs_ino_t get_sb_rootino()
 xfs_daddr_t get_agi_root()
 {
 	return ( xfs_daddr_t)be32_to_cpu( agi.agi_root);
+}
+
+__uint32_t get_agi_seqno()
+{
+	return be32_to_cpu( agi.agi_seqno);
 }
