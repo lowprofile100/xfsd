@@ -1,17 +1,10 @@
 /*++
-
-Copyright (c) 1989-2000 Microsoft Corporation
-
 Module Name:
-
     Read.c
-
 Abstract:
-
     This module implements the File Read routine for Read called by the
     Fsd/Fsp dispatch drivers.
-
-
+这个是read程序啦，具体是怎么回事还没有太看懂的说
 --*/
 
 #include "XProcs.h"
@@ -63,7 +56,7 @@ XCommonRead (
 
 Routine Description:
 
-    This is the common entry point for NtReadFile calls.  For synchronous requests,
+    This is the common entry point for XReadFile calls.  For synchronous requests,
     CommonRead will complete the request in the current thread.  If not
     synchronous the request will be passed to the Fsp if there is a need to
     block.
@@ -83,6 +76,7 @@ Return Value:
     PIO_STACK_LOCATION IrpSp = IoGetCurrentIrpStackLocation( Irp );
 
     TYPE_OF_OPEN TypeOfOpen;
+//该改成什么呢？
     PFCB Fcb;
     PCCB Ccb;
 
@@ -107,7 +101,7 @@ Return Value:
     PAGED_CODE();
 
     //
-    //  If this is a zero length read then return SUCCESS immediately.
+    //  read长度为0，直接返回成功
     //
 
     if (IrpSp->Parameters.Read.Length == 0) {
@@ -116,10 +110,8 @@ Return Value:
         return STATUS_SUCCESS;
     }
 
-    //
-    //  Decode the file object and verify we support read on this.  It
-    //  must be a user file, stream file or volume file (for a data disk).
-    //
+
+    // 解码文件对象，对象必须是合法的（文件等支持的格式）
 
     TypeOfOpen = XDecodeFileObject( IrpContext, IrpSp->FileObject, &Fcb, &Ccb );
 
@@ -130,7 +122,7 @@ Return Value:
         return STATUS_INVALID_DEVICE_REQUEST;
     }
 
-    //
+    // 
     //  Examine our input parameters to determine if this is noncached and/or
     //  a paging io operation.
     //
@@ -218,8 +210,7 @@ Return Value:
         if (TypeOfOpen == UserFileOpen) {
 
             //
-            //  We check whether we can proceed
-            //  based on the state of the file oplocks.
+            //  根据file oplocks的状态决定是否继续
             //
 
             Status = FsRtlCheckOplock( &Fcb->Oplock,
@@ -293,7 +284,7 @@ Return Value:
                 }
 
                 //
-                //  Make sure we don't overwrite the buffer.
+                //  确认没有重写缓冲区.
                 //
 
                 ReadByteCount = ByteCount;
@@ -363,11 +354,9 @@ Return Value:
 
                 Status = XNonCachedRead( IrpContext, Fcb, StartingOffset, ReadByteCount );
             }
-
-            //
-            //  Don't complete this request now if STATUS_PENDING was returned.
-            //
-
+            
+            //  如果STATUS_PENDING被返回，不完成次请求
+            
             if (Status == STATUS_PENDING) {
 
                 Irp = NULL;
@@ -386,9 +375,7 @@ Return Value:
 
                 if (!NT_SUCCESS( Status )) {
 
-                    //
-                    //  Set the information field to zero.
-                    //
+                    //  将信息设为0
 
                     Irp->IoStatus.Information = 0;
 
@@ -401,7 +388,7 @@ Return Value:
                         XRaiseStatus( IrpContext, Status );
                     }
 
-                    Status = FsRtlNormalizeNtstatus( Status, STATUS_UNEXPECTED_IO_ERROR );
+                    Status = FsRtlNormalizeXstatus( Status, STATUS_UNEXPECTED_IO_ERROR );
 
                 //
                 //  Check if there is any portion of the user's buffer to zero.
@@ -440,9 +427,7 @@ Return Value:
 
         if (IrpSp->FileObject->PrivateCacheMap == NULL) {
 
-            //
-            //  Now initialize the cache map.
-            //
+            //  初始化cachemap
 
             CcInitializeCacheMap( IrpSp->FileObject,
                                   (PCC_FILE_SIZES) &Fcb->AllocationSize,
@@ -481,9 +466,7 @@ Return Value:
                 try_return( Status = STATUS_CANT_WAIT );
             }
 
-            //
-            //  If the call didn't succeed, raise the error status
-            //
+            //  调用不成功，返回错误状态
 
             if (!NT_SUCCESS( Irp->IoStatus.Status )) {
 
@@ -505,9 +488,7 @@ Return Value:
             Status = Irp->IoStatus.Status;
         }
 
-        //
-        //  Update the current file position in the user file object.
-        //
+        //  将当前文件位置更新到用户文件对象
 
         if (SynchronousIo && !PagingIo && NT_SUCCESS( Status )) {
 
