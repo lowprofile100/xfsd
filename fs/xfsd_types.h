@@ -23,7 +23,6 @@
 # define BITS_PER_LONG 64
 #endif
 
-
 // Types for short
 #ifdef WIN32
 typedef __int64 __s64;
@@ -44,11 +43,11 @@ typedef unsigned short __u16;
 typedef signed char __s8;
 typedef unsigned char __u8;
 #endif
+
 // That means big endian 64
 typedef __u64 __be64;
 typedef __u32 __be32;
 typedef __u16 __be16;
-
 
 // Basic types.
 /*
@@ -63,6 +62,7 @@ typedef __u32	__TSLIB_(__uint32_t);
 typedef __s64 	__TSLIB_(__int64_t);
 typedef __u64	__TSLIB_(__uint64_t);
 
+#ifndef __XFS_TYPES_H__
 typedef enum { __TSLIB_(B_FALSE), __TSLIB_(B_TRUE) }	__TSLIB_(boolean_t);
 typedef __uint32_t		__TSLIB_(prid_t);		/* project ID */
 typedef __uint32_t		__TSLIB_(inst_t);		/* an instruction */
@@ -84,7 +84,7 @@ typedef __uint64_t __TSLIB_(__psunsigned_t);
 #else
 #error BITS_PER_LONG must be 32 or 64
 #endif
-
+#endif
 
 // Copied from linux/swab.h
 #define REVERSE_BITS16( x)((__u16)( 					\
@@ -234,7 +234,11 @@ typedef unsigned short 		__TSLIB_(umode_t);
 /*
  * Copied from xfs/xfs_linux.h
  */
+#ifdef WIN32
 #define __arch_pack
+#else
+#define __arch_pack __attribute__((__packed__))
+#endif
 
 /*
  * Copied from linux/stddef.h
@@ -263,5 +267,26 @@ FAKE_STRUCT( shrinker);
  */
 #define PAGE_SIZE (1<<12)
 #define PAGE_CACHE_SIZE PAGE_SIZE
+
+/*
+ * Copied from linux/fs.h, used in xfs_dir2_priv.h
+ */
+typedef long 				__TSLIB_(__kernel_off_t);
+typedef long long 			__TSLIB_(__kernel_loff_t);
+typedef __TSLIB_(__kernel_loff_t)	__TSLIB_(loff_t);
+typedef int (*filldir_t)(void *, const char *, int, __TSLIB_(loff_t), __u64, unsigned);
+
+/*
+ * Copied from include/linux/types.h
+ */
+typedef long 				time_t;
+
+
+/*
+ * Copied from ioctl.h
+ */
+#ifndef __user
+#define __user
+#endif
 
 #endif

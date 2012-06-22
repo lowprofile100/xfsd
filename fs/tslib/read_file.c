@@ -23,6 +23,11 @@
 #undef __KERNEL__
 #include "xfs/xfs_dir2_format.h"
 
+/* 
+ * For the function in xfs_dir2_sf.c
+ */
+#include "xfs/xfs_dir2_priv.h"
+
 #include "tslib/tslib_types.h"
 
 extern xfs_agi_t agi;
@@ -91,7 +96,7 @@ int init_mem( void **mem, int size)
 	return 0;
 }
 
-int read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
+xfs_dinode_t *read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 {
 	/* 
 	 * There are something dealing with xfs_agino_t in xfs_inum.h.
@@ -114,10 +119,10 @@ int read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 	xfs_daddr_t offset = inode & XFS_INO_MASK( sb.sb_inopblog);
 
 	init_mem( ( void **) &temp, sb.sb_inodesize * offset); 		// Set offset in block.
-	init_mem( ( void **) &temp, sizeof( xfs_dinode_t)); 		// Read it out.
+	init_mem( ( void **) &temp, sb.sb_inodesize); 			// Read it out.
 	xfs_dinode_from_disk( mem, temp); 				// Copy it.
 
-	return 0;
+	return temp;
 
 	/*
 	xfs_dinode_t temp;
@@ -161,24 +166,27 @@ int read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 
 int read_file_from_disk( const char *file_name, void *mem, long size)
 {
-	if ( *file_name != '/')
-	{
-		// Not supported yet.
-		return -3;
-	}
-
-	++file_name;
-	int len = str_len( file_name);
-	xfs_icdinode_t cur;
-	/* Get to the root inode*/
 	print("read_file_from_disk: %s\n", file_name);
-	if ( read_inode_relative( rootino, &cur) == 0)
+
+	xfs_icdinode_t cur;
+	xfs_dinode_t *raw;
+	xfs_ino_t next_ino = rootino;
+	/* Process to the end of the path.*/
+	while ( *file_name)
 	{
-		/* Process to the end of the path.*/
-		print("%x %x %x\n", (int)cur.di_magic, (int)cur.di_mode, (int)cur.di_version);
-		return 0;
-		while ( len)
+		if ( *file_name != '/')
 		{
+			// Not supported yet.
+			return -3;
+		}
+
+		/* Omit the first '/'. */
+		++file_name;
+
+		/* Get to next inode*/
+		if ( ( raw = read_inode_relative( next_ino, &cur)) != NULL)
+		{
+			print("%x %x %x\n", (int)cur.di_magic, (int)cur.di_mode, (int)cur.di_version);
 			/* If this is a dir. */
 			if ( ( cur.di_mode & S_IFMT) == S_IFDIR)
 			{
@@ -189,38 +197,65 @@ int read_file_from_disk( const char *file_name, void *mem, long size)
 				}
 				else
 				{
-					xfs_dir2_sf_hdr_t *hdrptr = XFS_DFORK_DPTP( &cur);
+					xfs_dir2_sf_hdr_t *hdrptr = ( xfs_dir2_sf_hdr_t *)XFS_DFORK_DPTR( raw);
 					__TSLIB___uint8_t count = hdrptr->count;
 					__TSLIB___uint8_t i8count = hdrptr->i8count;
-					int tot = -1;
-					int len;
+					print("Get count is %d %d\n", (int)count, (int)i8count);
+
 					if ( ( !count) ^ ( !i8count))
 					{
-						tot = count + i8count;
-						len = count ? 4 : 8;
-					}
+						int tot = count + i8count;
+						/* This struct is packed, please note it won't be usefull under windows. */
+						xfs_dir2_sf_entry_t *entptr = xfs_dir2_sf_firstentry( hdrptr);
+						print("get entry len %d, offset %d\n", (int)( entptr->namelen), (int)( entptr->offset.i[1]));
 
-					if ( tot == -1)
-					{
-						return -2;
+						const char *tail = file_name;
+						while ( *tail && *tail != '/')
+						{
+							++tail;
+						}
+						int name_len = tail - file_name;
+						while( tot--)
+						{
+							if ( name_len == entptr->namelen && str_ncmp( entptr->name, file_name, name_len) == 0)
+							{
+								/* We find next file/dir here. */
+								file_name = tail;
+								next_ino = xfs_dir2_sfe_get_ino( hdrptr, entptr);
+								/*
+								if ( hdrptr->i8count)
+								{
+									mem_cpy( ( char *)&next_ino, num, sizeof( xfs_dir2_ino8_t));
+								}
+								else
+								{
+									mem_cpy( ( char *)&next_ino, num, sizeof( xfs_dir2_ino4_t));
+								}
+								*/
+								break;
+							}
+							entptr = xfs_dir2_sf_nextentry( hdrptr, entptr);
+							//ino = xfs_dir2_sf_get_ino( sfp, sfep);
+						}
+						if ( file_name != tail)
+						{
+							return -4; /* Not found. */
+						}
 					}
 					else
 					{
-						xfs_dir2_sf_entry_t *entptr = xfs_dir2_sf_firstentry( hdrptr);
-						while( tot--)
-						{
-							//ino = xfs_dir2_sf_get_ino( sfp, sfep);
-						}
+						return -2;
 					}
 				}
 			}
-			int last;
+		}
+		else
+		{
+			print("read ino error %lld\n", (long long)next_ino);
+			return -1;
 		}
 	}
-	else
-	{
-		print("read ino error %lld\n", (int)rootino);
-		return -1;
-	}
+
+	print("Get first file block %lld\n", (long long)next_ino);
 	return 0;
 }

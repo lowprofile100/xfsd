@@ -29,7 +29,10 @@ int main()
 	print("Begin to read disk\n");
 	init_read_file_from_disk();
 	char tmp[100];
-	read_file_from_disk( "/a", tmp, 100);
+	int ret = read_file_from_disk( "/xfsd_types.h", tmp, 100);
+	printf("return %d\n", ret);
+	ret = read_file_from_disk( "/xfsd/xfsd.h", tmp, 100);
+	printf("return %d\n", ret);
 	return 0;
 }
 

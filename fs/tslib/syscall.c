@@ -51,6 +51,11 @@ long str_len( const char *str)
 	return strlen( str);
 }
 
+int str_ncmp( const char *s1, const char *s2, long n)
+{
+	return strncmp( s1, s2, n);
+}
+
 int read_file_length( void *ptr, long offset, int size, int nmemb)
 {
 	seek_file_set( offset);
