@@ -6,6 +6,8 @@
 int main()
 {
 	char magic[100] = { 0};
+	int ret;
+	char tmp[10000];
 	init();
 
 	get_sb_magic( magic);
@@ -29,8 +31,7 @@ int main()
 
 	print("Begin to read disk\n");
 	init_read_file_from_disk();
-	char tmp[10000];
-	int ret = read_file_from_disk( "/xfsd_types.h", tmp, 10000);
+	ret = read_file_from_disk( "/xfsd_types.h", tmp, 10000);
 	printf("%s\n\n\n\n", tmp);
 	printf("return %d\n", ret);
 

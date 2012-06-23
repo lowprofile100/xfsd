@@ -53,9 +53,12 @@ static inline void put_unaligned_be16( __u16 num, void *p)
 
 static inline void put_unaligned_be32( __u32 num, void *p)
 {
+	__u8 *left;
+	__u8 *right;
 	num = be32_to_cpu( num);
-	__u8 *left = ( __u8 *) p;
-	__u8 *right = ( __u8 *) & num;
+	left = ( __u8 *) p;
+	right = ( __u8 *) & num;
+
 	*(left++) = *(right++);
 	*(left++) = *(right++);
 	*(left++) = *(right++);
@@ -64,9 +67,12 @@ static inline void put_unaligned_be32( __u32 num, void *p)
 
 static inline void put_unaligned_be64( __u64 num, void *p)
 {
+	__u8 *left;
+	__u8 *right;
 	num = be64_to_cpu( num);
-	__u8 *left = ( __u8 *) p;
-	__u8 *right = ( __u8 *) & num;
+	left = ( __u8 *) p; 
+	right = ( __u8 *) & num;
+
 	*(left++) = *(right++);
 	*(left++) = *(right++);
 	*(left++) = *(right++);
@@ -141,13 +147,13 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 
 #define roundup( x, y) ( 					\
 { 								\
-		const typeof( y) __y = y; 			\
+		const auto __y = y; 				\
 		(((x) + (__y - 1)) / __y) * __y; 		\
 } 								\
 )
 #define rounddown( x, y) ( 					\
 { 								\
-		const typeof( x) __x = x; 			\
+		const auto __x = x; 	 			\
 		__x - (__x % (y)); 				\
 } 								\
 )

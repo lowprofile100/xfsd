@@ -70,8 +70,9 @@ int read_file_length( void *ptr, long offset, int size, int nmemb)
 int print( const char *format, ...)
 {
 	va_list arg;
+	int ret;
 	va_start( arg, format);
-	int ret = vprintf( format, arg);
+	ret = vprintf( format, arg);
 	va_end( arg);
 
 	return ret;
@@ -80,8 +81,10 @@ int print( const char *format, ...)
 int eprint( const char *format, ...)
 {
 	va_list arg;
+	int ret;
+
 	va_start( arg, format);
-	int ret = vfprintf( stderr, format, arg);
+	ret = vfprintf( stderr, format, arg);
 	va_end( arg);
 
 	return ret;
