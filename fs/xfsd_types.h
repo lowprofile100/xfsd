@@ -10,8 +10,8 @@
 # define __TSLIB_(x) x
 #endif
 
-#define FAKE_STRUCT( name) struct __TSLIB_(name) {}
-#define FAKE_STRUCT_TYPE( name) typedef struct __TSLIB_(name) {} __TSLIB_(name##_t)
+#define FAKE_STRUCT( name) struct __TSLIB_(name) { int a;}
+#define FAKE_STRUCT_TYPE( name) typedef struct __TSLIB_(name) { int a;} __TSLIB_(name##_t)
 
 /* This lib is only used under win32. */
 #ifdef WIN32
@@ -146,6 +146,8 @@ struct __TSLIB_(list_head)
 // Fake, need update.
 typedef struct
 {
+	/* VC does not support an empty struct. */
+	int a;
 } __TSLIB_(spinlock_t);
 
 // Fake radix_tree_root
@@ -157,9 +159,7 @@ struct __TSLIB_(radix_tree_root)
 };
 
 // mutex ???, This is a seriouse problem.
-struct __TSLIB_(mutex)
-{
-};
+FAKE_STRUCT( mutex);
 
 // Fake rcu_head
 struct __TSLIB_(rcu_head)

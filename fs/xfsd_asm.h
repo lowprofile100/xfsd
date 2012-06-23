@@ -42,9 +42,11 @@ static inline __u64 get_unaligned_be64( const void *p)
 
 static inline void put_unaligned_be16( __u16 num, void *p)
 {
+	__u8 *left;
+	__u8 *right;
 	num = be16_to_cpu( num);
-	__u8 *left = ( __u8 *) p;
-	__u8 *right = ( __u8 *) & num;
+	left = ( __u8 *)p;
+	right = ( __u8 *)p;
 	*(left++) = *(right++);
 	*(left++) = *(right++);
 }
