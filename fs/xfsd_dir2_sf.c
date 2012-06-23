@@ -17,7 +17,6 @@
  */
 #include "xfsd.h"
 #include "xfsd_types.h"
-#include "xfsd_asm.h"
 #include "linux/rbtree.h"
 
 #include "xfs/xfs_fs.h"

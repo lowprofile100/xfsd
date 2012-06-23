@@ -80,10 +80,25 @@ int init_read_file_from_disk()
 	agi_root = get_agi_root();
 }
 
-// Errors are not handled here.
-int read_block_from_disk( xfs_daddr_t block)
+__TSLIB___uint64_t read_blocks( void *mem, xfs_daddr_t block, int nmeb, __TSLIB___uint64_t size)
 {
-	read_file_length( ( void *)block_buf, block * sb.sb_blocksize, sb.sb_blocksize, 1);
+	if ( size && size < sb.sb_blocksize * nmeb)
+	{
+		read_file_length( mem, block * sb.sb_blocksize, size, 1);
+		return size;
+	}
+	else
+	{
+		read_file_length( mem, block * sb.sb_blocksize, sb.sb_blocksize, nmeb);
+		return sb.sb_blocksize * nmeb;
+	}
+	return 0;
+}
+
+// Errors are not handled here.
+int cache_block_from_disk( xfs_daddr_t block)
+{
+	read_blocks( ( void *)block_buf, block, 1, 0);
 	block_bufp = block_buf;
 	return 0;
 }
@@ -114,7 +129,7 @@ xfs_dinode_t *read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 	inoblock += blocks;
 
 	/* Read the whole block and put it into a local buffer. */
-	read_block_from_disk( inoblock);
+	cache_block_from_disk( inoblock);
 	xfs_dinode_t *temp;
 	xfs_daddr_t offset = inode & XFS_INO_MASK( sb.sb_inopblog);
 
@@ -164,9 +179,9 @@ xfs_dinode_t *read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 	*/
 }
 
-int read_file_from_disk( const char *file_name, void *mem, long size)
+int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t size)
 {
-	print("read_file_from_disk: %s\n", file_name);
+	eprint("read_file_from_disk: %s\n", file_name);
 
 	xfs_icdinode_t cur;
 	xfs_dinode_t *raw;
@@ -186,7 +201,7 @@ int read_file_from_disk( const char *file_name, void *mem, long size)
 		/* Get to next inode*/
 		if ( ( raw = read_inode_relative( next_ino, &cur)) != NULL)
 		{
-			print("%x %x %x\n", (int)cur.di_magic, (int)cur.di_mode, (int)cur.di_version);
+			eprint("%x %x %x\n", (int)cur.di_magic, (int)cur.di_mode, (int)cur.di_version);
 			/* If this is a dir. */
 			if ( ( cur.di_mode & S_IFMT) == S_IFDIR)
 			{
@@ -200,14 +215,14 @@ int read_file_from_disk( const char *file_name, void *mem, long size)
 					xfs_dir2_sf_hdr_t *hdrptr = ( xfs_dir2_sf_hdr_t *)XFS_DFORK_DPTR( raw);
 					__TSLIB___uint8_t count = hdrptr->count;
 					__TSLIB___uint8_t i8count = hdrptr->i8count;
-					print("Get count is %d %d\n", (int)count, (int)i8count);
+					eprint("Get count is %d %d\n", (int)count, (int)i8count);
 
 					if ( ( !count) ^ ( !i8count))
 					{
 						int tot = count + i8count;
 						/* This struct is packed, please note it won't be usefull under windows. */
 						xfs_dir2_sf_entry_t *entptr = xfs_dir2_sf_firstentry( hdrptr);
-						print("get entry len %d, offset %d\n", (int)( entptr->namelen), (int)( entptr->offset.i[1]));
+						eprint("get entry len %d, offset %d\n", (int)( entptr->namelen), (int)( entptr->offset.i[1]));
 
 						const char *tail = file_name;
 						while ( *tail && *tail != '/')
@@ -222,20 +237,9 @@ int read_file_from_disk( const char *file_name, void *mem, long size)
 								/* We find next file/dir here. */
 								file_name = tail;
 								next_ino = xfs_dir2_sfe_get_ino( hdrptr, entptr);
-								/*
-								if ( hdrptr->i8count)
-								{
-									mem_cpy( ( char *)&next_ino, num, sizeof( xfs_dir2_ino8_t));
-								}
-								else
-								{
-									mem_cpy( ( char *)&next_ino, num, sizeof( xfs_dir2_ino4_t));
-								}
-								*/
 								break;
 							}
 							entptr = xfs_dir2_sf_nextentry( hdrptr, entptr);
-							//ino = xfs_dir2_sf_get_ino( sfp, sfep);
 						}
 						if ( file_name != tail)
 						{
@@ -248,14 +252,65 @@ int read_file_from_disk( const char *file_name, void *mem, long size)
 					}
 				}
 			}
+			else
+			{
+				return -3;
+			}
 		}
 		else
 		{
-			print("read ino error %lld\n", (long long)next_ino);
+			eprint("read ino error %lld\n", (long long)next_ino);
 			return -1;
 		}
 	}
 
-	print("Get first file block %lld\n", (long long)next_ino);
+	/* Now we start to read the content of the file. */
+	eprint("Get first file block %lld\n", (long long)next_ino);
+	if ( ( raw = read_inode_relative( next_ino, &cur)) != NULL)
+	{
+		if ( cur.di_mode & S_IFMT != S_IFREG)
+		{
+			return -3;
+		}
+		else
+		{
+			if ( cur.di_format != XFS_DINODE_FMT_EXTENTS)
+			{
+				return -3;
+			}
+			else
+			{
+				xfs_bmbt_rec_t *rec = ( xfs_bmbt_rec_t *)XFS_DFORK_DPTR( raw);
+				xfs_bmbt_rec_host_t host;
+				xfs_bmbt_irec_t irec;
+				int cnt = XFS_DFORK_NEXTENTS( raw, XFS_DATA_FORK);
+				if ( size < be64_to_cpu( raw->di_size))
+				{
+					return -5; /* No enough space. */
+				}
+				else
+				{
+					size = be64_to_cpu( raw->di_size);
+				}
+				while ( cnt--)
+				{
+					host.l0 = be64_to_cpu( rec->l0);
+					host.l1 = be64_to_cpu( rec->l1);
+					xfs_bmbt_get_all( &host, &irec);
+
+					eprint("%u %u %u\n", irec.br_startoff, irec.br_startblock, irec.br_blockcount);
+
+					size -= read_blocks( mem + irec.br_startoff, irec.br_startblock, irec.br_blockcount, size);
+					rec++;
+				}
+			}
+		}
+	}
+	else
+	{
+		eprint("read ino error %lld\n", (long long)next_ino);
+		return -1;
+	}
+
 	return 0;
 }

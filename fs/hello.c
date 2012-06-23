@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <memory.h>
 #include "tslib/read_super.h"
 #include "tslib/read_file.h"
 
@@ -28,11 +29,15 @@ int main()
 
 	print("Begin to read disk\n");
 	init_read_file_from_disk();
-	char tmp[100];
-	int ret = read_file_from_disk( "/xfsd_types.h", tmp, 100);
+	char tmp[10000];
+	int ret = read_file_from_disk( "/xfsd_types.h", tmp, 10000);
+	printf("%s\n\n\n\n", tmp);
 	printf("return %d\n", ret);
-	ret = read_file_from_disk( "/xfsd/xfsd.h", tmp, 100);
+
+	memset( tmp, 0, sizeof( tmp));
+	ret = read_file_from_disk( "/xfsd/xfsd.h", tmp, 10000);
 	printf("return %d\n", ret);
+	printf("%s\n\n\n\n", tmp);
 	return 0;
 }
 

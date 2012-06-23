@@ -46,6 +46,11 @@ void *mem_cpy( void *dst, void *src, int n)
 	return memcpy( dst, src, n);
 }
 
+void *mem_set( void *s, int c, long n)
+{
+	return memset( s, c, n);
+}
+
 long str_len( const char *str)
 {
 	return strlen( str);
@@ -67,6 +72,16 @@ int print( const char *format, ...)
 	va_list arg;
 	va_start( arg, format);
 	int ret = vprintf( format, arg);
+	va_end( arg);
+
+	return ret;
+}
+
+int eprint( const char *format, ...)
+{
+	va_list arg;
+	va_start( arg, format);
+	int ret = vfprintf( stderr, format, arg);
 	va_end( arg);
 
 	return ret;

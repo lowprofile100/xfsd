@@ -108,6 +108,9 @@ typedef __uint64_t __TSLIB_(__psunsigned_t);
 #define be16_to_cpu( x) REVERSE_BITS16( x)
 #define be32_to_cpu( x) REVERSE_BITS32( x)
 #define be64_to_cpu( x) REVERSE_BITS64( x)
+#define cpu_to_be16( x) REVERSE_BITS16( x)
+#define cpu_to_be32( x) REVERSE_BITS32( x)
+#define cpu_to_be64( x) REVERSE_BITS64( x)
 #define le16_to_cpu( x) x
 #define le32_to_cpu( x) x
 #define le64_to_cpu( x) x

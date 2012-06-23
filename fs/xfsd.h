@@ -75,5 +75,10 @@
 
 #define ASSERT
 
+#define XFS_BIT_BLKNOS 	1
+#define XFS_BIT_INUMS  	1
+#define STATIC static
+#include "xfsd_asm.h"
+
 #endif
 

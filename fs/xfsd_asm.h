@@ -2,7 +2,7 @@
 #define __XFSD_ASM_H__
 #include "xfsd_types.h"
 
-inline __u16 get_unaligned_be16( const void *p)
+static inline __u16 get_unaligned_be16( const void *p)
 {
 	__be16 ret;
 	__u8 *left = ( __u8 *) &ret;
@@ -12,7 +12,7 @@ inline __u16 get_unaligned_be16( const void *p)
 	return be16_to_cpu(ret);
 }
 
-inline __u32 get_unaligned_be32( const void *p)
+static inline __u32 get_unaligned_be32( const void *p)
 {
 	__be32 ret;
 	__u8 *left = ( __u8 *) &ret;
@@ -24,7 +24,7 @@ inline __u32 get_unaligned_be32( const void *p)
 	return be32_to_cpu(ret);
 }
 
-inline __u64 get_unaligned_be64( const void *p)
+static inline __u64 get_unaligned_be64( const void *p)
 {
 	__be64 ret;
 	__u8 *left = ( __u8 *) &ret;
@@ -40,7 +40,7 @@ inline __u64 get_unaligned_be64( const void *p)
 	return be64_to_cpu(ret);
 }
 
-inline void put_unaligned_be16( __u16 num, void *p)
+static inline void put_unaligned_be16( __u16 num, void *p)
 {
 	num = be16_to_cpu( num);
 	__u8 *left = ( __u8 *) p;
@@ -49,7 +49,7 @@ inline void put_unaligned_be16( __u16 num, void *p)
 	*(left++) = *(right++);
 }
 
-inline void put_unaligned_be32( __u32 num, void *p)
+static inline void put_unaligned_be32( __u32 num, void *p)
 {
 	num = be32_to_cpu( num);
 	__u8 *left = ( __u8 *) p;
@@ -60,7 +60,7 @@ inline void put_unaligned_be32( __u32 num, void *p)
 	*(left++) = *(right++);
 }
 
-inline void put_unaligned_be64( __u64 num, void *p)
+static inline void put_unaligned_be64( __u64 num, void *p)
 {
 	num = be64_to_cpu( num);
 	__u8 *left = ( __u8 *) p;
@@ -74,6 +74,15 @@ inline void put_unaligned_be64( __u64 num, void *p)
 	*(left++) = *(right++);
 	*(left++) = *(right++);
 }
+
+#define do_div( n, base) 	\
+( 				\
+{ 				\
+	__u64 ret = n % base; 	\
+	n /= base; 		\
+	ret; 			\
+} 				\
+)
 
 static inline __u32 xfs_do_div(void *a, __u32 b, int n)
 {
@@ -110,6 +119,7 @@ static inline __u32 xfs_do_mod(void *a, __u32 b, int n)
 	return 0;
 }
 
+#undef do_div
 #define do_div(a, b)	xfs_do_div(&(a), (b), sizeof(a))
 #define do_mod(a, b)	xfs_do_mod(&(a), (b), sizeof(a))
 
