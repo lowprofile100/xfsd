@@ -186,6 +186,15 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 	xfs_icdinode_t cur;
 	xfs_dinode_t *raw;
 	xfs_ino_t next_ino = rootino;
+	xfs_dir2_sf_hdr_t *hdrptr;
+	__TSLIB___uint8_t count;
+	__TSLIB___uint8_t i8count;
+	int tot;
+	const char *tail;
+	int name_len;
+	xfs_bmbt_rec_t *rec;
+	xfs_bmbt_rec_host_t host;
+	xfs_bmbt_irec_t irec;
 	/* Process to the end of the path.*/
 	while ( *file_name)
 	{
@@ -212,24 +221,24 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 				}
 				else
 				{
-					xfs_dir2_sf_hdr_t *hdrptr = ( xfs_dir2_sf_hdr_t *)XFS_DFORK_DPTR( raw);
-					__TSLIB___uint8_t count = hdrptr->count;
-					__TSLIB___uint8_t i8count = hdrptr->i8count;
+					hdrptr = ( xfs_dir2_sf_hdr_t *)XFS_DFORK_DPTR( raw);
+					count = hdrptr->count;
+					i8count = hdrptr->i8count;
 					eprint("Get count is %d %d\n", (int)count, (int)i8count);
 
 					if ( ( !count) ^ ( !i8count))
 					{
-						int tot = count + i8count;
+						tot = count + i8count;
 						/* This struct is packed, please note it won't be usefull under windows. */
 						xfs_dir2_sf_entry_t *entptr = xfs_dir2_sf_firstentry( hdrptr);
 						eprint("get entry len %d, offset %d\n", (int)( entptr->namelen), (int)( entptr->offset.i[1]));
 
-						const char *tail = file_name;
+						tail = file_name;
 						while ( *tail && *tail != '/')
 						{
 							++tail;
 						}
-						int name_len = tail - file_name;
+						name_len = tail - file_name;
 						while( tot--)
 						{
 							if ( name_len == entptr->namelen && str_ncmp( entptr->name, file_name, name_len) == 0)
@@ -280,10 +289,8 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 			}
 			else
 			{
-				xfs_bmbt_rec_t *rec = ( xfs_bmbt_rec_t *)XFS_DFORK_DPTR( raw);
-				xfs_bmbt_rec_host_t host;
-				xfs_bmbt_irec_t irec;
-				int cnt = XFS_DFORK_NEXTENTS( raw, XFS_DATA_FORK);
+				rec = ( xfs_bmbt_rec_t *)XFS_DFORK_DPTR( raw);
+				tot = XFS_DFORK_NEXTENTS( raw, XFS_DATA_FORK);
 				if ( size < be64_to_cpu( raw->di_size))
 				{
 					return -5; /* No enough space. */
@@ -292,7 +299,8 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 				{
 					size = be64_to_cpu( raw->di_size);
 				}
-				while ( cnt--)
+
+				while ( tot--)
 				{
 					host.l0 = be64_to_cpu( rec->l0);
 					host.l1 = be64_to_cpu( rec->l1);
