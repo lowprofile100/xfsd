@@ -564,49 +564,6 @@ xfs_bmbt_key_diff(
 				      cur->bc_rec.b.br_startoff;
 }
 
-#ifdef DEBUG
-STATIC int
-xfs_bmbt_keys_inorder(
-	struct xfs_btree_cur	*cur,
-	union xfs_btree_key	*k1,
-	union xfs_btree_key	*k2)
-{
-	return be64_to_cpu(k1->bmbt.br_startoff) <
-		be64_to_cpu(k2->bmbt.br_startoff);
-}
-
-STATIC int
-xfs_bmbt_recs_inorder(
-	struct xfs_btree_cur	*cur,
-	union xfs_btree_rec	*r1,
-	union xfs_btree_rec	*r2)
-{
-	return xfs_bmbt_disk_get_startoff(&r1->bmbt) +
-		xfs_bmbt_disk_get_blockcount(&r1->bmbt) <=
-		xfs_bmbt_disk_get_startoff(&r2->bmbt);
-}
-#endif	/* DEBUG */
-
-static const struct xfs_btree_ops xfs_bmbt_ops = {
-	.rec_len		= sizeof(xfs_bmbt_rec_t),
-	.key_len		= sizeof(xfs_bmbt_key_t),
-
-	.update_cursor		= xfs_bmbt_update_cursor,
-	.get_maxrecs		= xfs_bmbt_get_maxrecs,
-	.get_minrecs		= xfs_bmbt_get_minrecs,
-	.get_dmaxrecs		= xfs_bmbt_get_dmaxrecs,
-	.init_key_from_rec	= xfs_bmbt_init_key_from_rec,
-	.init_rec_from_key	= xfs_bmbt_init_rec_from_key,
-	.init_rec_from_cur	= xfs_bmbt_init_rec_from_cur,
-	.init_ptr_from_cur	= xfs_bmbt_init_ptr_from_cur,
-	.key_diff		= xfs_bmbt_key_diff,
-#ifdef DEBUG
-	.keys_inorder		= xfs_bmbt_keys_inorder,
-	.recs_inorder		= xfs_bmbt_recs_inorder,
-#endif
-};
-
-
 /*
  * Calculate number of records in a bmap btree block.
  */
