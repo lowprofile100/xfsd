@@ -25,7 +25,7 @@
 
 // Types for short
 #ifdef WIN32
-#include <inttype.h>
+#include <inttypes.h>
 typedef __int64 __s64;
 typedef unsigned __int64 __u64;
 typedef __int32 __s32;
@@ -191,6 +191,7 @@ FAKE_STRUCT_TYPE( kmem_zone);
 #define NBBY		8		/* number of bits per byte */
 
 #ifdef WIN32
+typedef long __TSLIB_(size_t);
 #else
 typedef long long __TSLIB_(size_t);
 #endif
