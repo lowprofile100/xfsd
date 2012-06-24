@@ -25,7 +25,7 @@
 
 // Types for short
 #ifdef WIN32
-#include <inttypes.h>
+//#include <inttypes.h>
 typedef __int64 __s64;
 typedef unsigned __int64 __u64;
 typedef __int32 __s32;
