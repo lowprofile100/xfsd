@@ -83,6 +83,9 @@ static inline void put_unaligned_be64( __u64 num, void *p)
 	*(left++) = *(right++);
 }
 
+#ifdef WIN32
+#define do_div( n, base) ( n % base)
+#else
 #define do_div( n, base) 	\
 ( 				\
 { 				\
@@ -91,6 +94,7 @@ static inline void put_unaligned_be64( __u64 num, void *p)
 	ret; 			\
 } 				\
 )
+#endif
 
 static inline __u32 xfs_do_div(void *a, __u32 b, int n)
 {
@@ -145,6 +149,16 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 	return x;
 }
 
+#ifdef WIN32
+static inline __u32 roundup( __u32 x, __u32 y)
+{
+	return ( x + y - 1) / y * y;
+}
+static inline __u64 roundup( __u64 x, __u64 y)
+{
+	return ( x + y - 1) / y * y;
+}
+#else
 #define roundup( x, y) ( 					\
 { 								\
 		const auto __y = y; 				\
@@ -157,4 +171,5 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 		__x - (__x % (y)); 				\
 } 								\
 )
+#endif
 #endif
