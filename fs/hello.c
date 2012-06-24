@@ -41,16 +41,3 @@ int main()
 	printf("%s\n\n\n\n", tmp);
 	return 0;
 }
-
-/*
-#ifdef WIN32
-#include "ntddk.h"
-NTSTATUS
-DriverEntry(PDRIVER_OBJECT DriverObject,PUNICODE_STRING
-RegistryPath)
-{
-	main();
-	return STATUS_UNSUCCESSFUL;
-}
-#endif
-*/

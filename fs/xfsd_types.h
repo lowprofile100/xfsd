@@ -239,11 +239,7 @@ typedef unsigned short 		__TSLIB_(umode_t);
 /*
  * Copied from xfs/xfs_linux.h
  */
-#ifdef WIN32
-#define __arch_pack
-#else
 #define __arch_pack __attribute__((__packed__))
-#endif
 
 /*
  * Copied from linux/stddef.h
