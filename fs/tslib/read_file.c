@@ -113,6 +113,10 @@ int init_mem( void **mem, int size)
 
 xfs_dinode_t *read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 {
+	xfs_agblock_t blocks;
+	xfs_daddr_t inoblock;
+	xfs_dinode_t *temp;
+	xfs_daddr_t offset; 
 	/* 
 	 * There are something dealing with xfs_agino_t in xfs_inum.h.
 	 * But they all rely on xfs_mount.
@@ -121,17 +125,16 @@ xfs_dinode_t *read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 	 */
 
 	/* Get the start block of this ag.*/
-	xfs_agblock_t blocks = sb.sb_agblocks;
+	blocks = sb.sb_agblocks;
 	blocks *= get_agi_seqno();
 
 	/* I shouldn't rely on these globle varibles, use params instead. */
-	xfs_daddr_t inoblock = inode >> sb.sb_inopblog;
+	inoblock = inode >> sb.sb_inopblog;
 	inoblock += blocks;
 
 	/* Read the whole block and put it into a local buffer. */
 	cache_block_from_disk( inoblock);
-	xfs_dinode_t *temp;
-	xfs_daddr_t offset = inode & XFS_INO_MASK( sb.sb_inopblog);
+	offset = inode & XFS_INO_MASK( sb.sb_inopblog);
 
 	init_mem( ( void **) &temp, sb.sb_inodesize * offset); 		// Set offset in block.
 	init_mem( ( void **) &temp, sb.sb_inodesize); 			// Read it out.
