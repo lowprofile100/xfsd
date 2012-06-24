@@ -42,6 +42,7 @@ int main()
 	return 0;
 }
 
+/*
 #ifdef WIN32
 #include "ntddk.h"
 NTSTATUS
@@ -52,3 +53,4 @@ RegistryPath)
 	return STATUS_UNSUCCESSFUL;
 }
 #endif
+*/
