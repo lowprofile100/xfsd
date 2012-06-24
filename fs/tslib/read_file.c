@@ -188,6 +188,7 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 	xfs_dinode_t *raw;
 	xfs_ino_t next_ino = rootino;
 	xfs_dir2_sf_hdr_t *hdrptr;
+	xfs_dir2_sf_entry_t *entptr;
 	__TSLIB___uint8_t count;
 	__TSLIB___uint8_t i8count;
 	int tot;
@@ -234,7 +235,7 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 					{
 						tot = count + i8count;
 						/* This struct is packed, please note it won't be usefull under windows. */
-						xfs_dir2_sf_entry_t *entptr = xfs_dir2_sf_firstentry( hdrptr);
+						entptr = xfs_dir2_sf_firstentry( hdrptr);
 						eprint("get entry len %d, offset %d\n", (int)( entptr->namelen), (int)( entptr->offset.i[1]));
 
 						tail = file_name;
@@ -312,7 +313,7 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 
 					eprint("%u %u %u\n", irec.br_startoff, irec.br_startblock, irec.br_blockcount);
 
-					size -= read_blocks( mem + irec.br_startoff, irec.br_startblock, irec.br_blockcount, size);
+					size -= read_blocks( ( char *)mem + irec.br_startoff, irec.br_startblock, irec.br_blockcount, size);
 					rec++;
 				}
 			}
