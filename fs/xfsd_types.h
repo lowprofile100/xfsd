@@ -24,17 +24,7 @@
 #endif
 
 // Types for short
-#ifdef WIN32
-//#include <inttypes.h>
-typedef __int64 __s64;
-typedef unsigned __int64 __u64;
-typedef __int32 __s32;
-typedef unsigned __int32 __u32;
-typedef __int16 __s16;
-typedef unsigned __int16 __u16;
-typedef __int8 __s8;
-typedef unsigned __int8 __u8;
-#else
+// The length of these types are FIXED under WINDOWS and LINUX.
 typedef signed long long int __s64;
 typedef unsigned long long int __u64;
 typedef signed int __s32;
@@ -43,7 +33,6 @@ typedef signed short __s16;
 typedef unsigned short __u16;
 typedef signed char __s8;
 typedef unsigned char __u8;
-#endif
 
 // That means big endian 64
 typedef __u64 __be64;
