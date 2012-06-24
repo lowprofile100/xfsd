@@ -25,6 +25,7 @@
 
 // Types for short
 #ifdef WIN32
+#include <inttype.h>
 typedef __int64 __s64;
 typedef unsigned __int64 __u64;
 typedef __int32 __s32;
@@ -64,8 +65,8 @@ typedef __u64	__TSLIB_(__uint64_t);
 
 #ifndef __XFS_TYPES_H__
 typedef enum { __TSLIB_(B_FALSE), __TSLIB_(B_TRUE) }	__TSLIB_(boolean_t);
-typedef __uint32_t		__TSLIB_(prid_t);		/* project ID */
-typedef __uint32_t		__TSLIB_(inst_t);		/* an instruction */
+typedef __TSLIB_(__uint32_t)		__TSLIB_(prid_t);		/* project ID */
+typedef __TSLIB_(__uint32_t)		__TSLIB_(inst_t);		/* an instruction */
 
 typedef __s64			__TSLIB_(xfs_off_t);	/* <file offset> type */
 typedef unsigned long long	__TSLIB_(xfs_ino_t);	/* <inode> type */
@@ -76,11 +77,11 @@ typedef __u32			__TSLIB_(xfs_nlink_t);
 
 /* __psint_t is the same size as a pointer */
 #if (BITS_PER_LONG == 32)
-typedef __int32_t __TSLIB_(__psint_t);
-typedef __uint32_t __TSLIB_(__psunsigned_t);
+typedef __TSLIB_(__int32_t) __TSLIB_(__psint_t);
+typedef __TSLIB_(__uint32_t) __TSLIB_(__psunsigned_t);
 #elif (BITS_PER_LONG == 64)
-typedef __int64_t __TSLIB_(__psint_t);
-typedef __uint64_t __TSLIB_(__psunsigned_t);
+typedef __TSLIB_(__int64_t) __TSLIB_(__psint_t);
+typedef __TSLIB_(__uint64_t) __TSLIB_(__psunsigned_t);
 #else
 #error BITS_PER_LONG must be 32 or 64
 #endif
