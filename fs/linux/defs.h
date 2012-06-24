@@ -7,3 +7,4 @@
 #else
 #define NULL (( void *)0)
 #endif
+#endif
