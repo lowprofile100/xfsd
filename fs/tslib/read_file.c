@@ -184,8 +184,6 @@ xfs_dinode_t *read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 
 int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t size)
 {
-	eprint("read_file_from_disk: %s\n", file_name);
-
 	xfs_icdinode_t cur;
 	xfs_dinode_t *raw;
 	xfs_ino_t next_ino = rootino;
@@ -198,6 +196,9 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 	xfs_bmbt_rec_t *rec;
 	xfs_bmbt_rec_host_t host;
 	xfs_bmbt_irec_t irec;
+
+	eprint("read_file_from_disk: %s\n", file_name);
+
 	/* Process to the end of the path.*/
 	while ( *file_name)
 	{
