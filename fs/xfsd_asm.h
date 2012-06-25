@@ -150,10 +150,6 @@ static inline __uint64_t howmany_64(__uint64_t x, __uint32_t y)
 }
 
 #ifdef WIN32
-static inline __u32 roundup( __u32 x, __u32 y)
-{
-	return ( x + y - 1) / y * y;
-}
 static inline __u64 roundup( __u64 x, __u64 y)
 {
 	return ( x + y - 1) / y * y;

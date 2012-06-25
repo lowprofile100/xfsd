@@ -280,7 +280,7 @@ typedef int (*filldir_t)(void *, const char *, int, __TSLIB_(loff_t), __u64, uns
 /*
  * Copied from include/linux/types.h
  */
-typedef long 				time_t;
+typedef long 				__TSLIB_(time_t);
 
 
 /*
