@@ -1,9 +1,7 @@
 CFLAGS = /c /I .. /DWIN32
 CC = cl.exe
 
-OUT: hello.exe NORMALHEADER
-
-hello.exe: ../hello.c read_super.obj syscall.obj read_file.obj xfsd_dir2_sf.obj xfsd_bmap_btree.obj WINHEADER
+hello.exe: ../hello.c read_super.obj syscall.obj read_file.obj xfsd_dir2_sf.obj xfsd_bmap_btree.obj
 	$(CC) %s *.obj /I .. /DWIN32
 
 WINHEADER:

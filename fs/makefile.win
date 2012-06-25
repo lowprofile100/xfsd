@@ -1,0 +1,7 @@
+hello.exe:
+	cd build
+	nmake -f makefile.win WINHEADER
+	nmake -f makefile.win hello.exe
+	move hello.exe ..\hello.exe
+	nmake -f makefile.win NORMALHEADER
+	cd ..\
