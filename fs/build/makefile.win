@@ -1,0 +1,38 @@
+CFLAGS = /c /I .. /DWIN32
+CC = cl.exe
+
+OUT: hello.exe NORMALHEADER
+
+hello.exe: ../hello.c read_super.obj syscall.obj read_file.obj xfsd_dir2_sf.obj xfsd_bmap_btree.obj WINHEADER
+	$(CC) %s *.obj /I .. /DWIN32
+
+WINHEADER:
+	move ../xfs/xfs_dinode.h ../xfs/xfs_dinode.h.lin
+	move ../xfs/xfs_dinode.h.win ../xfs/xfs_dinode.h
+	move ../xfs/xfs_dir2_format.h ../xfs/xfs_dir2_format.h.lin
+	move ../xfs/xfs_dir2_format.h.win ../xfs/xfs_dir2_format.h
+
+read_super.obj: ../tslib/read_super.c
+	$(CC) %s $(CFLAGS)
+
+read_file.obj: ../tslib/read_file.c
+	$(CC) %s $(CFLAGS)
+
+syscall.obj: ../tslib/syscall.c
+	$(CC) %s $(CFLAGS)
+
+xfsd_dir2_sf.obj: ../xfsd_dir2_sf.c
+	$(CC) %s $(CFLAGS)
+
+xfsd_bmap_btree.obj: ../xfsd_bmap_btree.c
+	$(CC) %s $(CFLAGS)
+
+NORMALHEADER:
+	move ../xfs/xfs_dinode.h ../xfs/xfs_dinode.h.win
+	move ../xfs/xfs_dinode.h.lin ../xfs/xfs_dinode.h
+	move ../xfs/xfs_dir2_format.h ../xfs/xfs_dir2_format.h.win
+	move ../xfs/xfs_dir2_format.h.lin ../xfs/xfs_dir2_format.h
+
+clean:
+	del hello.exe
+	del *.obj
