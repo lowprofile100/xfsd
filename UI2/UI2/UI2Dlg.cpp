@@ -67,9 +67,11 @@ BEGIN_MESSAGE_MAP(CUI2Dlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_EN_CHANGE(IDC_EDIT2, &CUI2Dlg::OnEnChangeEdit2)
-	ON_BN_CLICKED(IDC_BUTTON5, &CUI2Dlg::OnBnClickedButton5)
-	ON_EN_CHANGE(IDC_EDIT1, &CUI2Dlg::OnEnChangeEdit1)
+
+	ON_BN_CLICKED(IDC_BUTTON5, &CUI2Dlg::OnBnClickedButton5)//复制
+
+	ON_BN_CLICKED(IDC_BUTTON6, &CUI2Dlg::OnBnClickedButton6)//打开
+	ON_BN_CLICKED(IDC_BUTTON3, &CUI2Dlg::OnBnClickedButton3)//打开目录
 END_MESSAGE_MAP()
 
 
@@ -160,19 +162,10 @@ HCURSOR CUI2Dlg::OnQueryDragIcon()
 
 
 
-
-
-
-//目标地址对话框
-void CUI2Dlg::OnEnChangeEdit2()
-{
-	
-}
-
 //copy
 void CUI2Dlg::OnBnClickedButton5()
 {
-	
+	CString title("提示");
 	CString str1,str2;
 GetDlgItemText(IDC_EDIT1, str1);
 GetDlgItemText(IDC_EDIT2, str2);
@@ -180,22 +173,66 @@ USES_CONVERSION; //将cstring转化为char所用的宏，以下将cstring转化�
 	char *addr1=T2A(str1.GetBuffer());
 	char *addr2=T2A(str2.GetBuffer());
 
-//这个内存是这么设的吗？可是这样的话后面用sizeof取不到长度。
+//内存
 	char buff[10240];
-	//这块跑不起来不知道为什么。。。。
+	//读文件啦
 init_read_file_from_disk();
-read_file_from_disk( addr1,buff,sizeof(buff));
-//以下的代码测试正常
+long a=read_file_from_disk( addr1,buff,sizeof(buff));
+//判断是否成功打开
+if(a<0)
+{
+CString text1("文件复制失败！");
+
+MessageBox(text1,title,MB_OK);
+}
+else{
+//打开新文件
 FILE* fp;
  fp=fopen(addr2,"wb+");// 读写打开或建立一个二进制文件，允许读和写
  fwrite(buff,sizeof(buff),1,fp);
 fclose(fp); //关闭文件
-
-
+CString text2("文件复制成功！");
+MessageBox(text2,title,MB_OK);
+}
 }
 
-//源地址对话框
-void CUI2Dlg::OnEnChangeEdit1()
-{
 
+//打开文件
+void CUI2Dlg::OnBnClickedButton6()
+{
+	CString title("提示");
+	CString str3;
+GetDlgItemText(IDC_EDIT1, str3);
+
+USES_CONVERSION; //将cstring转化为char所用的宏，以下将cstring转化为char
+char *addr3=T2A(str3.GetBuffer());
+
+	//SetDlgItemText(IDC_EDIT2, str);看看对不对
+//内存
+	char buff2[10240];
+	//读文件啦
+init_read_file_from_disk();
+long b=read_file_from_disk( addr3,buff2,sizeof(buff2));
+if(b<0)
+{
+	CString text2("文件打开失败！");
+MessageBox(text2,title,MB_OK);
+}
+CString str4("C:/Users/user/Desktop");
+CString str=str4+str3;//临时文件地址
+char *addr=T2A(str.GetBuffer());
+//打开新文件
+FILE* fp;
+ fp=fopen(addr,"wb+");// 读写打开或建立一个二进制文件，允许读和写
+ fwrite(buff2,sizeof(buff2),1,fp);
+fclose(fp); //关闭文件
+CString dir("open");
+ShellExecute(NULL,dir,str,NULL,NULL,SW_SHOWNORMAL);
+}
+
+
+//打开目录
+void CUI2Dlg::OnBnClickedButton3()
+{
+	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 }
