@@ -56,7 +56,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalOptions>"C:\Users\yangjing\Documents\GitHub\xfsd\fs\xfsd.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>"..\..\fs\xfsd.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
