@@ -25,6 +25,9 @@ xfsd_dir2_sf.obj: ../xfsd_dir2_sf.c
 xfsd_bmap_btree.obj: ../xfsd_bmap_btree.c
 	$(CC) %s $(CFLAGS)
 
+xfsd.lib: read_super.obj syscall.obj read_file.obj xfsd_dir2_sf.obj xfsd_bmap_btree.obj
+	lib.exe /OUT:xfsd.lib read_super.obj syscall.obj read_file.obj xfsd_dir2_sf.obj xfsd_bmap_btree.obj
+
 NORMALHEADER:
 	move ../xfs/xfs_dinode.h ../xfs/xfs_dinode.h.win
 	move ../xfs/xfs_dinode.h.lin ../xfs/xfs_dinode.h

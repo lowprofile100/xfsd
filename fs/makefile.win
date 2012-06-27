@@ -5,3 +5,12 @@ hello.exe:
 	move hello.exe ..\hello.exe
 	nmake -f makefile.win NORMALHEADER
 	cd ..\
+
+lib:	
+	cd build
+	nmake -f makefile.win WINHEADER
+	nmake -f makefile.win xfsd.lib
+	copy xfsd.lib ..\xfsd.lib
+	nmake -f makefile.win NORMALHEADER
+	cd ..\
+

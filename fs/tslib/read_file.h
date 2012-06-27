@@ -5,5 +5,6 @@
 #include "tslib_types.h"
 int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t size);
 
+int init_read_file_from_disk();
 
 #endif
