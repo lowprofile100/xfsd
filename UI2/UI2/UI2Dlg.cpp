@@ -7,7 +7,7 @@
 #include "UI2Dlg.h"
 #include "afxdialogex.h"
 
-#include "fs/tslib/read_file.h"
+#include "tslib/read_file.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -181,15 +181,14 @@ USES_CONVERSION; //将cstring转化为char所用的宏，以下将cstring转化�
 	char *addr2=T2A(str2.GetBuffer());
 
 //这个内存是这么设的吗？可是这样的话后面用sizeof取不到长度。
-	char buff[1024];
+	char buff[10240];
 	//这块跑不起来不知道为什么。。。。
-init_read_file()
-read_file( addr1,buff,sizeof(buff));
-
+init_read_file_from_disk();
+read_file_from_disk( addr1,buff,sizeof(buff));
 //以下的代码测试正常
 FILE* fp;
  fp=fopen(addr2,"wb+");// 读写打开或建立一个二进制文件，允许读和写
- fwrite(&buff,sizeof(buff),1,fp);
+ fwrite(buff,sizeof(buff),1,fp);
 fclose(fp); //关闭文件
 
 

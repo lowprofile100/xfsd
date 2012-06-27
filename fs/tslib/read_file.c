@@ -76,6 +76,7 @@ static char *block_bufp;
 
 int init_read_file_from_disk()
 {
+	init();
 	rootino = sb.sb_rootino;
 	agi_root = get_agi_root();
 }
