@@ -35,3 +35,8 @@ NTSTATUS CreateDevice (IN PDRIVER_OBJECT pDriverObject);
 VOID HelloDDKUnload (IN PDRIVER_OBJECT pDriverObject);
 NTSTATUS HelloDDKDispatchRoutine(IN PDEVICE_OBJECT pDevObj,
 								 IN PIRP pIrp);
+NTSTATUS ReadRoutine(IN PDEVICE_OBJECT pDevObj,
+								 IN PIRP pIrp);
+NTSTATUS WriteRoutine(IN PDEVICE_OBJECT pDevObj,
+								 IN PIRP pIrp);
+
