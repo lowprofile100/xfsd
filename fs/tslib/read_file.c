@@ -192,6 +192,8 @@ xfs_ino_t find_ino_by_path( const char *file_name)
 	__TSLIB___uint8_t count;
 	const char *tail;
 	int name_len;
+	xfs_ino_t next_ino;
+        next_ino = rootino;
 
 	if ( *file_name != '/')
 	{
@@ -199,7 +201,6 @@ xfs_ino_t find_ino_by_path( const char *file_name)
 		return 0;
 	}
 
-	xfs_ino_t next_ino = rootino;
 	eprint("move to dir: %s\n", file_name);
 
 	/* Process to the end of the path.*/
@@ -275,7 +276,8 @@ long read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t s
 	xfs_bmbt_rec_host_t host;
 	xfs_bmbt_irec_t irec;
 
-	xfs_ino_t next_ino = find_ino_by_path( file_name);
+	xfs_ino_t next_ino;
+        next_ino = find_ino_by_path( file_name);
 
 	if ( next_ino <= 0)
 	{
