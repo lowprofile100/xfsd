@@ -10,6 +10,7 @@
 #include "tslib/read_file.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -72,6 +73,9 @@ BEGIN_MESSAGE_MAP(CUI2Dlg, CDialogEx)
 
 	ON_BN_CLICKED(IDC_BUTTON6, &CUI2Dlg::OnBnClickedButton6)//打开
 	ON_BN_CLICKED(IDC_BUTTON3, &CUI2Dlg::OnBnClickedButton3)//打开目录
+	ON_BN_CLICKED(IDC_BUTTON10, &CUI2Dlg::OnBnClickedButton10)//mount
+
+	ON_BN_CLICKED(IDC_BUTTON2, &CUI2Dlg::OnBnClickedButton2)//卸载
 END_MESSAGE_MAP()
 
 
@@ -166,6 +170,7 @@ HCURSOR CUI2Dlg::OnQueryDragIcon()
 void CUI2Dlg::OnBnClickedButton5()
 {
 	CString title("提示");
+	CString text1("文件复制失败！");
 	CString str1,str2;
 GetDlgItemText(IDC_EDIT1, str1);
 GetDlgItemText(IDC_EDIT2, str2);
@@ -176,23 +181,28 @@ USES_CONVERSION; //将cstring转化为char所用的宏，以下将cstring转化�
 //内存
 	char buff[10240];
 	//读文件啦
-init_read_file_from_disk();
 long a=read_file_from_disk( addr1,buff,sizeof(buff));
 //判断是否成功打开
 if(a<0)
 {
-CString text1("文件复制失败！");
 
 MessageBox(text1,title,MB_OK);
 }
 else{
 //打开新文件
 FILE* fp;
- fp=fopen(addr2,"wb+");// 读写打开或建立一个二进制文件，允许读和写
+errno_t err;
+err=fopen_s(&fp,addr2,"wb+");// 读写打开或建立一个二进制文件，允许读和写
+if(err<0)//打开文件失败鸟
+{
+MessageBox(text1,title,MB_OK);
+} 
+else{
  fwrite(buff,sizeof(buff),1,fp);
 fclose(fp); //关闭文件
 CString text2("文件复制成功！");
 MessageBox(text2,title,MB_OK);
+}
 }
 }
 
@@ -200,8 +210,9 @@ MessageBox(text2,title,MB_OK);
 //打开文件
 void CUI2Dlg::OnBnClickedButton6()
 {
-	CString title("提示");
 	CString str3;
+	CString title("提示");	
+	CString text2("文件打开失败！");
 GetDlgItemText(IDC_EDIT1, str3);
 
 USES_CONVERSION; //将cstring转化为char所用的宏，以下将cstring转化为char
@@ -211,28 +222,115 @@ char *addr3=T2A(str3.GetBuffer());
 //内存
 	char buff2[10240];
 	//读文件啦
-init_read_file_from_disk();
 long b=read_file_from_disk( addr3,buff2,sizeof(buff2));
-if(b<0)
+if(b<0)//读文件失败
 {
-	CString text2("文件打开失败！");
 MessageBox(text2,title,MB_OK);
 }
+else{
 CString str4("C:/Users/user/Desktop");
 CString str=str4+str3;//临时文件地址
 char *addr=T2A(str.GetBuffer());
 //打开新文件
 FILE* fp;
- fp=fopen(addr,"wb+");// 读写打开或建立一个二进制文件，允许读和写
- fwrite(buff2,sizeof(buff2),1,fp);
+errno_t err;
+ err=fopen_s(&fp,addr,"wb+");// 读写打开或建立一个二进制文件，允许读和写
+if(err<0)//打开临时文件失败鸟
+{
+MessageBox(text2,title,MB_OK);
+} 
+else{
+fwrite(buff2,sizeof(buff2),1,fp);
 fclose(fp); //关闭文件
 CString dir("open");
+//打开临时文件
 ShellExecute(NULL,dir,str,NULL,NULL,SW_SHOWNORMAL);
+}
+}
 }
 
 
 //打开目录
 void CUI2Dlg::OnBnClickedButton3()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	int  a=0;
+	char buff[10240];
+	CString title("提示");
+	CString str,strlist;
+	CString huiche("\r\n");
+GetDlgItemText(IDC_EDIT1, str);
+
+USES_CONVERSION; //将cstring转化为char所用的宏，以下将cstring转化为char
+char *addr=T2A(str.GetBuffer());
+//num=3;
+//buff="a.h\0b.h\0c.h\0";
+
+//获取文件目录
+
+a=list_file( addr, buff);
+if(a<0)
+{
+	CString text2("目录打开失败！");
+MessageBox(text2,title,MB_OK);
+
+}
+else{
+	//char转换string并分行
+int i=0;
+int j=0;
+for(i=0;i<a;j++)
+{
+	if(buff[j]!='\0')
+	{
+	strlist+= buff[j];
+	}
+	else
+	{
+		i++;
+		strlist=strlist + huiche;
+    }
+}
+SetDlgItemText(IDC_EDIT3, strlist);
+}
+}
+
+//加载
+void CUI2Dlg::OnBnClickedButton10()
+{
+CString title("提示");
+CString str1;
+GetDlgItemText(IDC_EDIT4, str1);
+
+//创建文件目录
+CString list("tslib");
+CreateDirectory(list, NULL);
+//复制文件系统
+CString dispath("tslib/xfs.lib");
+CopyFile(str1, dispath, 0);
+//加载咧
+init_read_file_from_disk();
+
+CString text2("文件系统加载成功！");
+MessageBox(text2,title,MB_OK);
+CString str2("文件系统成功加载");
+	str1=str1+str2;
+SetDlgItemText(IDC_EDIT4, str1);
+}
+
+
+
+
+//卸载
+void CUI2Dlg::OnBnClickedButton2()
+{
+CString title("提示");
+
+CString dispath("tslib/xfs.lib");
+DeleteFile(dispath);
+CString text2("文件系统已卸载！");
+MessageBox(text2,title,MB_OK);
+CString str2("文件系统已卸载");
+
+SetDlgItemText(IDC_EDIT4, str2);
+	
 }
