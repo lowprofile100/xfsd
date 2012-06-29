@@ -8,6 +8,7 @@ int main()
 	char magic[100] = { 0};
 	int ret;
 	char tmp[10000];
+	char *cur;
 	init();
 
 	get_sb_magic( magic);
@@ -39,5 +40,18 @@ int main()
 	ret = read_file_from_disk( "/xfsd/xfsd.h", tmp, 10000);
 	printf("return %d\n", ret);
 	printf("%s\n\n\n\n", tmp);
+
+	ret = list_file( "/", tmp);
+	cur = tmp;
+	while ( ret--)
+	{
+		while ( *cur)
+		{
+			++cur;
+		}
+		*cur++ = '\n';
+	}
+	*cur++ = '\0';
+	printf("returned:\n%s\n", tmp);
 	return 0;
 }

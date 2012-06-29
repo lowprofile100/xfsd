@@ -183,140 +183,136 @@ xfs_dinode_t *read_inode_relative( xfs_agino_t inode, xfs_icdinode_t *mem)
 	*/
 }
 
-int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t size)
+xfs_ino_t find_ino_by_path( const char *file_name)
 {
 	xfs_icdinode_t cur;
 	xfs_dinode_t *raw;
-	xfs_ino_t next_ino = rootino;
 	xfs_dir2_sf_hdr_t *hdrptr;
 	xfs_dir2_sf_entry_t *entptr;
 	__TSLIB___uint8_t count;
-	__TSLIB___uint8_t i8count;
-	int tot;
 	const char *tail;
 	int name_len;
-	xfs_bmbt_rec_t *rec;
-	xfs_bmbt_rec_host_t host;
-	xfs_bmbt_irec_t irec;
 
-	eprint("read_file_from_disk: %s\n", file_name);
+	if ( *file_name != '/')
+	{
+		// Not supported yet.
+		return 0;
+	}
+
+	xfs_ino_t next_ino = rootino;
+	eprint("move to dir: %s\n", file_name);
 
 	/* Process to the end of the path.*/
 	while ( *file_name)
 	{
-		if ( *file_name != '/')
+		/* Omit the first '/'. If this is the last one, then we get a dir.*/
+		if ( !*++file_name)
 		{
-			// Not supported yet.
-			return -3;
+			break;
 		}
-
-		/* Omit the first '/'. */
-		++file_name;
 
 		/* Get to next inode*/
 		if ( ( raw = read_inode_relative( next_ino, &cur)) != NULL)
 		{
 			eprint("%x %x %x\n", (int)cur.di_magic, (int)cur.di_mode, (int)cur.di_version);
-			/* If this is a dir. */
-			if ( ( cur.di_mode & S_IFMT) == S_IFDIR)
+
+			/* If this is a dir. Only simple form is supported now. */
+			if ( ( cur.di_mode & S_IFMT) == S_IFDIR || cur.di_format != XFS_DINODE_FMT_LOCAL)
 			{
-				/* Only simple form is supported now. */
-				if ( cur.di_format != XFS_DINODE_FMT_LOCAL)
+				hdrptr = ( xfs_dir2_sf_hdr_t *)XFS_DFORK_DPTR( raw);
+				count = hdrptr->count;
+
+				/* This struct is packed, please note it won't be usefull under windows. */
+				entptr = xfs_dir2_sf_firstentry( hdrptr);
+				eprint("get entry len %d, offset %d\n", (int)( entptr->namelen), (int)( entptr->offset.i[1]));
+
+				tail = file_name;
+				while ( *tail && *tail != '/')
 				{
-					return -3;
+					++tail;
 				}
-				else
+				name_len = tail - file_name;
+
+				while( count--)
 				{
-					hdrptr = ( xfs_dir2_sf_hdr_t *)XFS_DFORK_DPTR( raw);
-					count = hdrptr->count;
-					i8count = hdrptr->i8count;
-					eprint("Get count is %d %d\n", (int)count, (int)i8count);
-
-					if ( ( !count) ^ ( !i8count))
+					if ( name_len == entptr->namelen && str_ncmp( entptr->name, file_name, name_len) == 0)
 					{
-						tot = count + i8count;
-						/* This struct is packed, please note it won't be usefull under windows. */
-						entptr = xfs_dir2_sf_firstentry( hdrptr);
-						eprint("get entry len %d, offset %d\n", (int)( entptr->namelen), (int)( entptr->offset.i[1]));
+						/* We find next file/dir here. */
+						file_name = tail;
+						next_ino = xfs_dir2_sfe_get_ino( hdrptr, entptr);
+						break;
+					}
+					entptr = xfs_dir2_sf_nextentry( hdrptr, entptr);
+				}
 
-						tail = file_name;
-						while ( *tail && *tail != '/')
-						{
-							++tail;
-						}
-						name_len = tail - file_name;
-						while( tot--)
-						{
-							if ( name_len == entptr->namelen && str_ncmp( entptr->name, file_name, name_len) == 0)
-							{
-								/* We find next file/dir here. */
-								file_name = tail;
-								next_ino = xfs_dir2_sfe_get_ino( hdrptr, entptr);
-								break;
-							}
-							entptr = xfs_dir2_sf_nextentry( hdrptr, entptr);
-						}
-						if ( file_name != tail)
-						{
-							return -4; /* Not found. */
-						}
-					}
-					else
-					{
-						return -2;
-					}
+				if ( file_name != tail)
+				{
+					return 0; /* Not found. */
 				}
 			}
 			else
 			{
-				return -3;
+				return 0;
 			}
 		}
 		else
 		{
 			eprint("read ino error %lld\n", (long long)next_ino);
-			return -1;
+			return 0;
 		}
+	}
+
+	return next_ino;
+}
+
+long read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t size)
+{
+	xfs_icdinode_t cur;
+	xfs_dinode_t *raw;
+
+	int cnt;
+	xfs_bmbt_rec_t *rec;
+	xfs_bmbt_rec_host_t host;
+	xfs_bmbt_irec_t irec;
+
+	xfs_ino_t next_ino = find_ino_by_path( file_name);
+
+	if ( next_ino <= 0)
+	{
+		return -1; // File not Found.
 	}
 
 	/* Now we start to read the content of the file. */
 	eprint("Get first file block %lld\n", (long long)next_ino);
 	if ( ( raw = read_inode_relative( next_ino, &cur)) != NULL)
 	{
-		if ( cur.di_mode & S_IFMT != S_IFREG)
+		if ( cur.di_mode & S_IFMT != S_IFREG || cur.di_format != XFS_DINODE_FMT_EXTENTS)
 		{
-			return -3;
+			return -1;
 		}
 		else
 		{
-			if ( cur.di_format != XFS_DINODE_FMT_EXTENTS)
+			rec = ( xfs_bmbt_rec_t *)XFS_DFORK_DPTR( raw);
+			cnt = XFS_DFORK_NEXTENTS( raw, XFS_DATA_FORK);
+			if ( size < be64_to_cpu( raw->di_size))
 			{
-				return -3;
+				return 0; /* No enough space. */
 			}
 			else
 			{
-				rec = ( xfs_bmbt_rec_t *)XFS_DFORK_DPTR( raw);
-				tot = XFS_DFORK_NEXTENTS( raw, XFS_DATA_FORK);
-				if ( size < be64_to_cpu( raw->di_size))
-				{
-					return -5; /* No enough space. */
-				}
-				else
-				{
-					size = be64_to_cpu( raw->di_size);
-				}
+				size = be64_to_cpu( raw->di_size);
+			}
 
-				while ( tot--)
-				{
-					host.l0 = be64_to_cpu( rec->l0);
-					host.l1 = be64_to_cpu( rec->l1);
-					xfs_bmbt_get_all( &host, &irec);
+			while ( cnt--)
+			{
+				host.l0 = be64_to_cpu( rec->l0);
+				host.l1 = be64_to_cpu( rec->l1);
+				xfs_bmbt_get_all( &host, &irec);
 
-					eprint("%u %u %u\n", irec.br_startoff, irec.br_startblock, irec.br_blockcount);
+				eprint("%u %u %u\n", irec.br_startoff, irec.br_startblock, irec.br_blockcount);
 
-					size -= read_blocks( ( char *)mem + irec.br_startoff, irec.br_startblock, irec.br_blockcount, size);
-					rec++;
-				}
+				size -= read_blocks( ( char *)mem + irec.br_startoff, irec.br_startblock, irec.br_blockcount, size);
+				rec++;
 			}
 		}
 	}
@@ -327,4 +323,40 @@ int read_file_from_disk( const char *file_name, void *mem, __TSLIB___uint64_t si
 	}
 
 	return 0;
+}
+
+int list_file( const char *path, char *buf)
+{
+	xfs_icdinode_t cur;
+	xfs_dinode_t *raw;
+	xfs_dir2_sf_hdr_t *hdrptr;
+	xfs_dir2_sf_entry_t *entptr;
+
+	int i = -1;
+
+	xfs_ino_t next_ino = find_ino_by_path( path);
+
+	if ( next_ino > 0 && ( raw = read_inode_relative( next_ino, &cur)) != NULL)
+	{
+		if ( ( cur.di_mode & S_IFMT) != S_IFDIR || cur.di_format != XFS_DINODE_FMT_LOCAL)
+		{
+			return -1;
+		}
+		else
+		{
+			hdrptr = ( xfs_dir2_sf_hdr_t *)XFS_DFORK_DPTR( raw);
+
+			for ( i = 0, entptr = xfs_dir2_sf_firstentry( hdrptr);
+					i < hdrptr->count;
+					i++, entptr = xfs_dir2_sf_nextentry( hdrptr, entptr))
+			{
+				mem_cpy( buf, (char *)( entptr->name), entptr->namelen);
+				buf += entptr->namelen;
+				*buf = '\0';
+				++buf;
+			}
+		}
+	}
+
+	return i;
 }
