@@ -332,9 +332,9 @@ int list_file( const char *path, char *buf)
 	xfs_dir2_sf_hdr_t *hdrptr;
 	xfs_dir2_sf_entry_t *entptr;
 
+	xfs_ino_t next_ino;
 	int i = -1;
-
-	xfs_ino_t next_ino = find_ino_by_path( path);
+	next_ino = find_ino_by_path( path);
 
 	if ( next_ino > 0 && ( raw = read_inode_relative( next_ino, &cur)) != NULL)
 	{
