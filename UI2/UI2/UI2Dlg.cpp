@@ -307,6 +307,14 @@ CreateDirectory(list, NULL);
 //复制文件系统
 CString dispath("tslib/xfs.lib");
 CopyFile(str1, dispath, 0);
+int   nError   =   GetLastError(); 
+if( nError!=0)
+{
+	CString text1("文件系统加载失败！");
+MessageBox(text1,title,MB_OK);
+
+}
+else{
 //加载咧
 init_read_file_from_disk();
 
@@ -315,6 +323,7 @@ MessageBox(text2,title,MB_OK);
 CString str2("文件系统成功加载");
 	str1=str1+str2;
 SetDlgItemText(IDC_EDIT4, str1);
+}
 }
 
 
@@ -326,11 +335,16 @@ void CUI2Dlg::OnBnClickedButton2()
 CString title("提示");
 
 CString dispath("tslib/xfs.lib");
-DeleteFile(dispath);
+if(!DeleteFile(dispath)){
+	CString text1("当前不存在已加载的文件系统！");
+MessageBox(text1,title,MB_OK);
+}
+else
+{
 CString text2("文件系统已卸载！");
 MessageBox(text2,title,MB_OK);
 CString str2("文件系统已卸载");
 
 SetDlgItemText(IDC_EDIT4, str2);
-	
+}	
 }
