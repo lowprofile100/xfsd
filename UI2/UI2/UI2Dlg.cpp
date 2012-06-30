@@ -229,7 +229,10 @@ MessageBox(text2,title,MB_OK);
 }
 else{
 CString str4("C:/Users/user/Desktop");
-CString str=str4+str3;//临时文件地址
+int lon=str3.ReverseFind('/');
+CString strname=str3.Mid(lon);
+
+CString str=str4+strname;//临时文件地址
 char *addr=T2A(str.GetBuffer());
 //打开新文件
 FILE* fp;
@@ -335,16 +338,20 @@ void CUI2Dlg::OnBnClickedButton2()
 CString title("提示");
 
 CString dispath("tslib/xfs.lib");
-if(!DeleteFile(dispath)){
-	CString text1("当前不存在已加载的文件系统！");
-MessageBox(text1,title,MB_OK);
-}
-else
+int nError=DeleteFile(dispath);
+//卸载的调用啊喂！
+
+if( nError==0)
 {
+	CString text1("文件系统卸载失败！");
+MessageBox(text1,title,MB_OK);
+
+}
+else{
+
 CString text2("文件系统已卸载！");
 MessageBox(text2,title,MB_OK);
 CString str2("文件系统已卸载");
-
 SetDlgItemText(IDC_EDIT4, str2);
-}	
+}
 }
